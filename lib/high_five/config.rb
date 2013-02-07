@@ -1,14 +1,24 @@
-class HighFive::Config
-    attr_accessor :root, #Root of the project 
-                  :index #relative path to index.html
+module HighFive
+    class Config
+        attr_accessor :root, #Root of the project 
+                      :index #relative path to index.html
 
 
-    def self.configure(&block) 
-        config = HighFive::Config.new
-        yield config
+        def self.configure(&block) 
+            @@instance = HighFive::Config.new
+            yield @@instance
 
-        #validate
+            #validate
+        end
+
+        def self.load
+            begin
+                require "config/high_five.rb"
+            rescue LoadError
+                raise "high_five configuration not found, forgot to run 'hi5 init'?"
+            end
+            return @@instance 
+        end
+
     end
-
-
 end

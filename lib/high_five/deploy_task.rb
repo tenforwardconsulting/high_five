@@ -1,22 +1,23 @@
-
+require 'sprockets'
 module HighFive
-  class Deploy < Thor
+  module DeployTask
     include Thor::Actions  
-    default_task :deploy
-    desc "deploy", "Deploy the application"
+
+    desc "Deploy the app for a specific platform in a specific environment"
     method_option :platform, :aliases => "-p", :desc => "Platform [ios|android|web]", :default => "ios"
     method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
     method_option :compress, :aliases => '-c', :desc => "Compress javascript [true]", :default => false
     method_option :weinre_url, :aliases => '-w', :desc => "Enter your Weinre server-url including port", :default => false
     method_option :"copy-files", :aliases => '-f', :desc => "Copy files to eclipse/xcode directory", :default => false
     def deploy
+      config = HighFive::Config.load
       @environment  = options[:environment]
       @platform     = options[:platform]
       @compress     = options[:compress]
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
 
-        self.destination_root = File.join(EBC::ROOT, "www-#{@platform}")
+      self.destination_root = File.join(EBC::ROOT, "www-#{@platform}")
       FileUtils.rm_rf(self.destination_root)
 
       say "Deploying app: <#{options[:platform]}> <#{options[:environment]}>"
@@ -87,12 +88,7 @@ module HighFive
         end
       end
     end
-    
-
-    def self.source_root
-        File.join(EBC::ROOT)
-    end
-
+  
     private 
 
     def builder
@@ -100,7 +96,7 @@ module HighFive
     end
 
     def get_builder
-        builder = Sprockets::Environment.new(File.join(EBC::ROOT))
+      builder = Sprockets::Environment.new(File.join(EBC::ROOT))
       builder.append_path 'assets'
 
       builder
