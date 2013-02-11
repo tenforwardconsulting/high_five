@@ -55,6 +55,7 @@ module HighFive
 
       #   end
 
+      # Bundle is based on the provided build platform
       bundle = builder.find_asset "app-#{@platform}"
       if (@environment == "production")
         appjs = File.join(self.destination_root, "app.js")
@@ -62,6 +63,7 @@ module HighFive
         say "      create  #{appjs}", :green
         bundle.write_to(appjs)
       else
+        # Add each of the javascript files to the generated folder
         @javascripts = bundle.dependencies.map do |asset| 
           copy_file asset.logical_path
           asset.logical_path
@@ -69,6 +71,7 @@ module HighFive
       end
       @stylesheets = []
             
+      # Adds each of the static assets to the generated folder (sylesheets etc)
       config.static_assets.each do |asset|
         if File.directory? asset
           directory asset
@@ -77,7 +80,6 @@ module HighFive
         end
       end
 
-
       #   inside "stylesheets" do |dir|
       #     # Copy generated css
       #     copy_file "#{@platform}.css", "theme.css"
@@ -85,7 +87,6 @@ module HighFive
       # end
         
       # Build index.html
-
       template "high_five.html.erb", File.join(self.destination_root, "index.html")
 
       # if (@copy_files) 
@@ -114,8 +115,6 @@ module HighFive
     def get_builder
       builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
       builder.append_path '.'
-      #builder.append_path 'assets'
-
 
       builder
     end

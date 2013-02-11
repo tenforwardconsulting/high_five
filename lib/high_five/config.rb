@@ -2,7 +2,7 @@ module HighFive
     class Config
         attr_accessor :root, #Root of the project 
                       :index, #relative path to index.html
-                      :destination
+                      :destination #generated folder for project('www')
         attr_reader :static_assets
 
         def self.configure(&block) 
