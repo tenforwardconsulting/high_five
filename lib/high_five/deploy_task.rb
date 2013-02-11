@@ -1,5 +1,4 @@
 require 'sprockets'
-require 'pry'
 module HighFive
   module DeployTask 
 
@@ -7,11 +6,11 @@ module HighFive
       config = HighFive::Config.load
       @environment  = options[:environment]
       @platform     = options[:platform]
-      @compress     = options[:compress]
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
       @meta         = {}
 
+      raise "Please set config.destination" if config.destination.nil?
       self.destination_root = config.destination
       FileUtils.rm_rf(self.destination_root)
 
@@ -57,9 +56,16 @@ module HighFive
       #   end
 
       bundle = builder.find_asset "app-#{@platform}"
-      @javascripts = bundle.dependencies.map do |asset| 
-        copy_file asset.logical_path
-        asset.logical_path
+      if (@environment == "production")
+        appjs = File.join(self.destination_root, "app.js")
+        @javascripts = ["app.js"]
+        say "      create  #{appjs}", :green
+        bundle.write_to(appjs)
+      else
+        @javascripts = bundle.dependencies.map do |asset| 
+          copy_file asset.logical_path
+          asset.logical_path
+        end
       end
       @stylesheets = []
             
@@ -112,13 +118,6 @@ module HighFive
 
 
       builder
-    end
-
-    def build_javascript(options)
-
-      build = builder.find_asset options[:from]
-      say "      create  www/assets/javascripts/#{options[:to]}", :green
-      build.write_to(options[:to])
     end
 
     #TODO: this probably doesn't work on windows 
