@@ -25,10 +25,16 @@ module HighFive
         def initialize
             @static_assets = []
             @meta = {}
+            @platform_configs = {}
         end 
 
         def assets(path)
             @static_assets << path.dup
+        end
+
+        def platform(name, &block)
+          @platform_configs[name] = HighFive::Config.new
+          yield @platform_configs[name]
         end
     end
 end

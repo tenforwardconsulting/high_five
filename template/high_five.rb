@@ -5,10 +5,15 @@ HighFive::Config.configure do |config|
   # This will add the resources folder (stylesheets etc.) 
   # config.assets "resources"
 
-  # config.platform :ios do |ios|
-  #   ios.javascripts "js/cordova-ios-2.3.0.js"
-  #   ios.stylesheets "resources/css/"
-  # end
+  config.platform :ios do |ios|
+    ios.assets "resources/ios"
+    ios.destination "www-ios"
+  end
+
+  config.platform :android do |android|
+    android.assets "resources/android"
+    android.destination "www-android"
+  end
 
 
 end
