@@ -6,23 +6,8 @@ rescue LoadError
   require 'high_five'
 end
 
-
-
-if ARGV[0] == '-h'
-  ARGV = ['help', 'deploy']
-end
+require 'high_five/cli'
 
 HighFive::ROOT = Dir.pwd
 
-action = ARGV[0] || "help"
-
-case action
-when "init"
-    HighFive::Init.start
-when "deploy"
-    HighFive::Deploy.start
-when "help"
-    puts "Usage: hi5 deploy -e environment -p platform"
-    puts "\tcurrent supported environments are development or production"
-    puts "\tcurrent supported platforms are android, ios, and web"
-end
+HighFive::Cli.start

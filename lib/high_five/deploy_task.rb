@@ -1,15 +1,8 @@
 require 'sprockets'
 module HighFive
-  module DeployTask
-    include Thor::Actions  
+  module DeployTask 
 
-    desc "Deploy the app for a specific platform in a specific environment"
-    method_option :platform, :aliases => "-p", :desc => "Platform [ios|android|web]", :default => "ios"
-    method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
-    method_option :compress, :aliases => '-c', :desc => "Compress javascript [true]", :default => false
-    method_option :weinre_url, :aliases => '-w', :desc => "Enter your Weinre server-url including port", :default => false
-    method_option :"copy-files", :aliases => '-f', :desc => "Copy files to eclipse/xcode directory", :default => false
-    def deploy
+    def deploy_task
       config = HighFive::Config.load
       @environment  = options[:environment]
       @platform     = options[:platform]
@@ -17,15 +10,17 @@ module HighFive
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
 
-      self.destination_root = File.join(EBC::ROOT, "www-#{@platform}")
+      self.destination_root = config.destination
       FileUtils.rm_rf(self.destination_root)
 
+      #todo add to config
       say "Deploying app: <#{options[:platform]}> <#{options[:environment]}>"
       say " -Weinre url: #{@weinre_url}" if @weinre_url
 
       # Compile CSS
       pwd = Dir.pwd
       
+      #todo customize this
       Dir.chdir File.join("assets", "sass")
       success = false
       if @environment == "production"
@@ -67,26 +62,22 @@ module HighFive
         
       # Build index.html
       template File.join("assets", "erb", "index.html.erb"), File.join(self.destination_root, "index.html")
-      if (@platform == 'web' && @environment == 'development') 
-        # copy this up to the root for super easy live local development
-        copy_file File.join(self.destination_root, "index.html"), File.join(EBC::ROOT, "index-debug.html")
-      end
 
-      if (@copy_files) 
-        dest = nil
-        # copy to platform build directories
-        if (@platform == 'android')
-          dest = File.join(EBC::ROOT, "..", "account_assistant-android/assets/www")
-        elsif (@platform == 'ios') 
-          dest = File.join(EBC::ROOT, "..", "account_assistant-ios/www")
-        end
+      # if (@copy_files) 
+      #   dest = nil
+      #   # copy to platform build directories
+      #   if (@platform == 'android')
+      #     dest = File.join(HighFive::ROOT, "..", "account_assistant-android/assets/www")
+      #   elsif (@platform == 'ios') 
+      #     dest = File.join(HighFive::ROOT, "..", "account_assistant-ios/www")
+      #   end
 
-        if (!dest.nil? && File.exists?(dest))
-          say "Copying to #{@platform} native project: #{dest}"
-          FileUtils.rm_rf(dest)
-          directory self.destination_root, dest
-        end
-      end
+      #   if (!dest.nil? && File.exists?(dest))
+      #     say "Copying to #{@platform} native project: #{dest}"
+      #     FileUtils.rm_rf(dest)
+      #     directory self.destination_root, dest
+      #   end
+      # end
     end
   
     private 
@@ -96,7 +87,7 @@ module HighFive
     end
 
     def get_builder
-      builder = Sprockets::Environment.new(File.join(EBC::ROOT))
+      builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
       builder.append_path 'assets'
 
       builder

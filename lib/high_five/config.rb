@@ -13,7 +13,7 @@ module HighFive
 
         def self.load
             begin
-                require "config/high_five.rb"
+                require File.join(HighFive::ROOT, "config", "high_five.rb")
             rescue LoadError
                 raise "high_five configuration not found, forgot to run 'hi5 init'?"
             end
