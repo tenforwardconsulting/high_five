@@ -9,6 +9,11 @@ module HighFive
         say "Creating #{conf}"
         FileUtils.cp File.join(File.dirname(__FILE__), "..", "..", "template", "high_five.rb"), conf
       end
+      index = "high_five.html.erb"
+      if (!File.exists?(index))
+        say "Creating #{index}"
+        FileUtils.cp File.join(File.dirname(__FILE__), "..", "..", "template", "index.html.erb"), index
+      end
       platforms = ["android", "ios", "web"]
       platforms.each do |platform|
         platform_js = "app-#{platform}.js"
