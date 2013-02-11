@@ -63,6 +63,15 @@ module HighFive
       end
       @stylesheets = []
             
+      config.static_assets.each do |asset|
+        if File.directory? asset
+          directory asset
+        else
+          copy_file asset
+        end
+      end
+
+
       #   inside "stylesheets" do |dir|
       #     # Copy generated css
       #     copy_file "#{@platform}.css", "theme.css"

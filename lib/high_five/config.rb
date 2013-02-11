@@ -3,7 +3,7 @@ module HighFive
         attr_accessor :root, #Root of the project 
                       :index, #relative path to index.html
                       :destination
-
+        attr_reader :static_assets
 
         def self.configure(&block) 
             @@instance = HighFive::Config.new
@@ -21,5 +21,12 @@ module HighFive
             return @@instance 
         end
 
+        def initialize
+            @static_assets = []
+        end 
+
+        def assets(path)
+            @static_assets << path.dup
+        end
     end
 end
