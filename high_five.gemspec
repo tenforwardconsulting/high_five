@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "thor"
   s.add_runtime_dependency "compass"
-  s.add_runtime_dependency "ruby-yui-compressor"
+  s.add_runtime_dependency "yui-compressor"
   s.add_development_dependency "rspec", "~>2.5.0"
 
   s.files         = `git ls-files`.split("\n")
