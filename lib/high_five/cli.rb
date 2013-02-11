@@ -24,14 +24,17 @@ module HighFive
       init_task
     end
 
-    def self.source_root 
-      File.join(config.root)
+    def initialize(*args)
+      super(*args)
+      self.source_paths << File.join(base_config.root)
+      # HighFive::Cli.source_root(File.join(base_config.root))
     end
+
 
     private
 
-    def config
-      @config ||= HighFive::Config.load
+    def base_config
+      @base_config ||= HighFive::Config.load
     end
   end
 end

@@ -3,12 +3,12 @@ module HighFive
   module DeployTask 
 
     def deploy_task
-      config = HighFive::Config.load
       @environment  = options[:environment]
       @platform     = options[:platform]
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
       @meta         = {}
+      config = base_config.build_platform_config(@platform)
 
       raise "Please set config.destination" if config.destination.nil?
       self.destination_root = config.destination

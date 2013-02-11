@@ -1,5 +1,5 @@
 HighFive::Config.configure do |config|
-  config.root = File.join(File.basename(__FILE__), '..')
+  config.root = File.join(File.dirname(__FILE__), '..')
   config.destination = "www"
 
   # This will add the resources folder (stylesheets etc.) 
