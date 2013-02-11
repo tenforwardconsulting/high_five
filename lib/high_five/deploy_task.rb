@@ -1,4 +1,5 @@
 require 'sprockets'
+require 'pry'
 module HighFive
   module DeployTask 
 
@@ -9,6 +10,7 @@ module HighFive
       @compress     = options[:compress]
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
+      @meta         = {}
 
       self.destination_root = config.destination
       FileUtils.rm_rf(self.destination_root)
@@ -21,47 +23,55 @@ module HighFive
       pwd = Dir.pwd
       
       #todo customize this
-      Dir.chdir File.join("assets", "sass")
-      success = false
-      if @environment == "production"
-        success = system("compass compile --force --no-debug-info -e production #{options[:platform]}.scss")
-      else
-        success = system("compass compile --force --no-debug-info #{options[:platform]}.scss")
-      end
-      unless success
-        raise "Error compiling CSS, aborting build"
-      end
-      Dir.chdir pwd
+      # Dir.chdir File.join("assets", "sass")
+      # success = false
+      # if @environment == "production"
+      #   success = system("compass compile --force --no-debug-info -e production #{options[:platform]}.scss")
+      # else
+      #   success = system("compass compile --force --no-debug-info #{options[:platform]}.scss")
+      # end
+      # unless success
+      #   raise "Error compiling CSS, aborting build"
+      # end
+      # Dir.chdir pwd
 
       # Build javascript
-      inside "assets" do |assets|
-        directory "images"
-        directory "stylesheets"
-        inside "javascripts" do |dir|
-          if @compress == true
-            build_javascript :from => "app-#{@platform}", :to => 'app-all.js'
-            compress_javascript "app-all.js"
-          else      
-            bundle = builder.find_asset "app-#{@platform}"
-            @js_files = bundle.dependencies.map {|asset| File.join("assets",  asset.logical_path) }
-            copy_file "app.js"
-            directory "app"
-            directory "config"
-            directory "lib"
-            directory "platform/phonegap" unless @platform == 'web'
-            directory "platform/#{@platform}"
-          end
+      # inside "assets" do |assets|
+      #   directory "images"
+      #   directory "stylesheets"
+      #   inside "javascripts" do |dir|
+      #     if @compress == true
+      #       build_javascript :from => "app-#{@platform}", :to => 'app-all.js'
+      #       compress_javascript "app-all.js"
+      #     else      
+      #       bundle = builder.find_asset "app-#{@platform}"
+      #       @js_files = bundle.dependencies.map {|asset| File.join("assets",  asset.logical_path) }
+      #       copy_file "app.js"
+      #       directory "app"
+      #       directory "config"
+      #       directory "lib"
+      #       directory "platform/phonegap" unless @platform == 'web'
+      #       directory "platform/#{@platform}"
+      #     end
 
-        end
-            
-        inside "stylesheets" do |dir|
-          # Copy generated css
-          copy_file "#{@platform}.css", "theme.css"
-        end
+      #   end
+
+      bundle = builder.find_asset "app-#{@platform}"
+      @javascripts = bundle.dependencies.map do |asset| 
+        copy_file asset.logical_path
+        asset.logical_path
       end
+      @stylesheets = []
+            
+      #   inside "stylesheets" do |dir|
+      #     # Copy generated css
+      #     copy_file "#{@platform}.css", "theme.css"
+      #   end
+      # end
         
       # Build index.html
-      template File.join("assets", "erb", "index.html.erb"), File.join(self.destination_root, "index.html")
+
+      template "high_five.html.erb", File.join(self.destination_root, "index.html")
 
       # if (@copy_files) 
       #   dest = nil
@@ -88,7 +98,9 @@ module HighFive
 
     def get_builder
       builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
-      builder.append_path 'assets'
+      builder.append_path '.'
+      #builder.append_path 'assets'
+
 
       builder
     end

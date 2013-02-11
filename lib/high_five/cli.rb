@@ -23,5 +23,9 @@ module HighFive
     def init
       init_task
     end
+
+    def self.source_root 
+      File.join(HighFive::ROOT)
+    end
   end
 end

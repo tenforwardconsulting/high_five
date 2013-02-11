@@ -1,7 +1,8 @@
 module HighFive
     class Config
         attr_accessor :root, #Root of the project 
-                      :index #relative path to index.html
+                      :index, #relative path to index.html
+                      :destination
 
 
         def self.configure(&block) 
