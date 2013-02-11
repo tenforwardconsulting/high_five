@@ -1,8 +1,9 @@
 module HighFive
     class Config
-        attr_accessor :root, #Root of the project 
-                      :index, #relative path to index.html
-                      :destination #generated folder for project('www')
+        attr_accessor :root,         # Root of the project 
+                      :destination,  # generated folder for project('www')
+                      :page_title,   # <title>#{page_title}</title>
+                      :meta          # config.meta << { http-equiv: "Content-Type" content: "text/html; charset=utf-8" }
         attr_reader :static_assets
 
         def self.configure(&block) 
@@ -23,6 +24,7 @@ module HighFive
 
         def initialize
             @static_assets = []
+            @meta = {}
         end 
 
         def assets(path)

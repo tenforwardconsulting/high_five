@@ -25,7 +25,13 @@ module HighFive
     end
 
     def self.source_root 
-      File.join(HighFive::ROOT)
+      File.join(config.root)
+    end
+
+    private
+
+    def config
+      @config ||= HighFive::Config.load
     end
   end
 end
