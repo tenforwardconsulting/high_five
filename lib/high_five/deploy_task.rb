@@ -80,6 +80,29 @@ module HighFive
         end
       end
 
+      # Adds each of the static javascripts
+      config.static_javascripts.each do |javascript|
+        if File.directory? javascript
+          directory javascript
+          @javascripts.unshift(*Dir[File.join(javascript,'**','*.js')])
+        else
+          copy_file javascript
+          @javascripts.unshift javascript
+        end
+      end
+
+      config.static_stylesheets.each do |stylesheet|
+        if File.directory? stylesheet
+          directory stylesheet
+          @stylesheets.unshift(*Dir[File.join(stylesheet,'**','*.css')])
+        else
+          copy_file stylesheet
+          @stylesheets.unshift stylesheet
+        end
+      end
+
+
+
       #   inside "stylesheets" do |dir|
       #     # Copy generated css
       #     copy_file "#{@platform}.css", "theme.css"

@@ -4,7 +4,9 @@ module HighFive
                       :destination,  # generated folder for project('www')
                       :page_title,   # <title>#{page_title}</title>
                       :meta,          # config.meta << { http-equiv: "Content-Type" content: "text/html; charset=utf-8" }
-                      :static_assets
+                      :static_assets,
+                      :static_javascripts,
+                      :static_stylesheets
 
         def self.configure(&block) 
             @@instance = HighFive::Config.new
@@ -30,6 +32,8 @@ module HighFive
             new_config.meta ||= self.meta
             new_config.page_title ||= self.page_title
             new_config.static_assets += self.static_assets
+            new_config.static_javascripts += self.static_javascripts
+            new_config.static_stylesheets += self.static_stylesheets
             return new_config
           else
             return self
@@ -39,6 +43,8 @@ module HighFive
         def initialize(config=nil)
             if config
               @static_assets = config.static_assets.dup
+              @static_javascripts = config.static_javascripts.dup
+              @static_stylesheets = config.static_stylesheets.dup
               @meta = config.meta.dup
               self.root = config.root
               self.destination = config.destination
@@ -46,13 +52,23 @@ module HighFive
               self.meta = config.meta
             else
               @static_assets = []
+              @static_javascripts = []
+              @static_stylesheets = []
               @meta = {}
               @platform_configs = {}
             end
         end 
 
         def assets(path)
-            @static_assets << path.dup
+          @static_assets << path.dup
+        end
+
+        def javascripts(path)
+          @static_javascripts << path.dup
+        end
+
+        def stylesheets(path)
+          @static_stylesheets << path.dup
         end
 
         def platform(name, &block)

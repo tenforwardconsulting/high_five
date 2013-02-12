@@ -7,12 +7,12 @@ HighFive::Config.configure do |config|
 
   config.platform :ios do |ios|
     ios.assets "resources/ios"
-    ios.destination "www-ios"
+    ios.destination = "www-ios"
   end
 
   config.platform :android do |android|
     android.assets "resources/android"
-    android.destination "www-android"
+    android.destination = "www-android"
   end
 
 
