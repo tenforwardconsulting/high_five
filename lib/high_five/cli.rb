@@ -16,6 +16,7 @@ module HighFive
     method_option :weinre_url, :aliases => '-w', :desc => "Enter your Weinre server-url including port", :default => false
     method_option :"copy-files", :aliases => '-f', :desc => "Copy files to eclipse/xcode directory", :default => false
     def deploy
+      self.source_paths << File.join(base_config.root)
       deploy_task
     end
 
@@ -26,8 +27,6 @@ module HighFive
 
     def initialize(*args)
       super(*args)
-      self.source_paths << File.join(base_config.root)
-      # HighFive::Cli.source_root(File.join(base_config.root))
     end
 
 
