@@ -16,6 +16,7 @@ module HighFive
 
       #todo add to config
       say "Deploying app: <#{options[:platform]}> <#{options[:environment]}>"
+      say "\t#{self.destination_root}"
       say " -Weinre url: #{@weinre_url}" if @weinre_url
 
       # Compile CSS

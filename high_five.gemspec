@@ -12,9 +12,10 @@ Gem::Specification.new do |s|
   s.summary     = %q{HighFive is a set of build scripts and tools for packing HTML5 apps both for the web and for phonegap}
   s.description = %q{Write a better description}
 
-  s.add_runtime_dependency "thor"
-  s.add_runtime_dependency "compass"
-  s.add_runtime_dependency "yui-compressor"
+  s.add_runtime_dependency "thor", "~>0.17.0"
+  s.add_runtime_dependency "compass", "~>0.12.2"
+  s.add_runtime_dependency "yui-compressor", "~>0.9.6"
+  s.add_runtime_dependency "sprockets", "~>2.9.0"
   s.add_development_dependency "rspec", "~>2.5.0"
 
   s.files         = `git ls-files`.split("\n")
