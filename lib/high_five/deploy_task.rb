@@ -114,8 +114,6 @@ module HighFive
         end
       end
 
-
-
       #   inside "stylesheets" do |dir|
       #     # Copy generated css
       #     copy_file "#{@platform}.css", "theme.css"
@@ -124,7 +122,7 @@ module HighFive
         
       # Build index.html
       say "Generating index.html"
-      template File.join(@config_root, "high_five.html.erb"), File.join(self.destination_root, "index.html")
+      template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
 
       # if (@copy_files) 
       #   dest = nil
