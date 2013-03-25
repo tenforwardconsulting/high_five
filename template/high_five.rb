@@ -5,14 +5,13 @@ HighFive::Config.configure do |config|
   # This will add the resources folder to all platforms (stylesheets etc.) 
   # config.assets "resources"
 
-  # include javascript libraries
-  # these get included before everything else in the app
+  # Include javascript libraries
+  # These get included before everything else in the app
 
   # config.javascripts "http://maps.google.com/maps/api/js?sensor=true"
   # config.javascripts "lib/jquery-min.js"
 
-
-  # configure plaform specific settings like this
+  # Configure plaform specific settings like this
   # config.platform :ios do |ios|
   #   ios.assets "resources/ios"
   #   ios.destination = "www-ios"

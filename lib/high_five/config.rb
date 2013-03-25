@@ -6,7 +6,9 @@ module HighFive
                       :meta,          # config.meta << { http-equiv: "Content-Type" content: "text/html; charset=utf-8" }
                       :static_assets,
                       :static_javascripts,
-                      :static_stylesheets
+                      :static_stylesheets,
+                      :sass_files
+
 
         def self.configure(&block) 
             @@instance = HighFive::Config.new
@@ -45,6 +47,7 @@ module HighFive
               @static_assets = config.static_assets.dup
               @static_javascripts = config.static_javascripts.dup
               @static_stylesheets = config.static_stylesheets.dup
+              @sass_files = config.sass_files.dup
               @meta = config.meta.dup
               self.root = config.root
               self.destination = config.destination
@@ -54,6 +57,7 @@ module HighFive
               @static_assets = []
               @static_javascripts = []
               @static_stylesheets = []
+              @sass_files = []
               @meta = {}
               @platform_configs = {}
             end
@@ -61,6 +65,11 @@ module HighFive
 
         def assets(path)
           @static_assets << path.dup
+        end
+
+        def sass(config_file) 
+          puts "Compiling sass per #{config_file}"
+          @sass_files << config_file
         end
 
         def javascripts(path)
