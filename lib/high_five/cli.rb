@@ -9,6 +9,9 @@ module HighFive
     include HighFive::DeployTask
     include HighFive::InitTask
 
+    # source root path for Thor::Actions commands
+    source_root(HighFive::TEMPLATE_PATH)
+
     desc "deploy", "Deploy the app for a specific platform in a specific environment"
     method_option :platform, :aliases => "-p", :desc => "Platform [ios|android|web]", :default => "ios"
     method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
@@ -24,9 +27,13 @@ module HighFive
       init_task
     end
 
-    def initialize(*args)
-      super(*args)
-      self.source_paths << File.join(base_config.root)
+    def initialize(args=[], options={}, config={})
+      super(args, options, config)
+
+      # Don't load config if user is doing >hi5 init
+      unless config[:current_task][:name] == "init"
+        self.source_paths << File.join(base_config.root)
+      end
       # HighFive::Cli.source_root(File.join(base_config.root))
     end
 
@@ -34,7 +41,12 @@ module HighFive
     private
 
     def base_config
-      @base_config ||= HighFive::Config.load
+      begin 
+        @base_config ||= HighFive::Config.load
+      rescue StandardError => e
+        say e.message, :red
+        exit
+      end
     end
   end
 end

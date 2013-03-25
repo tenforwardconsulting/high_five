@@ -3,26 +3,20 @@ module HighFive
   module InitTask
 
     def init_task
-      FileUtils.mkdir_p("config")
-      conf = File.join("config", "high_five.rb")
-      if (!File.exists?(conf))
-        say "Creating #{conf}"
-        FileUtils.cp File.join(File.dirname(__FILE__), "..", "..", "template", "high_five.rb"), conf
+      destination_root = HighFive::ROOT
+  
+      inside "config" do 
+        template("high_five.rb")
       end
-      index = "high_five.html.erb"
-      if (!File.exists?(index))
-        say "Creating #{index}"
-        FileUtils.cp File.join(File.dirname(__FILE__), "..", "..", "template", "index.html.erb"), index
-      end
+
+      copy_file "index.html.erb", :skip => true
+
       platforms = ["android", "ios", "web"]
+
       platforms.each do |platform|
         platform_js = "app-#{platform}.js"
-        if (!File.exists?(platform_js))
-          say "Creating #{platform_js}"
-          FileUtils.cp File.join(File.dirname(__FILE__), "..", "..", "template", "app.js"), platform_js
-        end
+        copy_file "app.js", "app-#{platform}.js", :skip => true
       end
     end
-
   end
 end
