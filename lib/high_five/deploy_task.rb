@@ -2,20 +2,23 @@ require 'sprockets'
 module HighFive
   module DeployTask 
 
-    def deploy_task
+    def deploy_task(target)
       @environment  = options[:environment]
-      @platform     = options[:platform]
+      @platform     = target
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
       @meta         = {}
       config = base_config.build_platform_config(@platform)
+      @config_root = File.join("config", "high_five")
+
+      self.source_paths << File.join(base_config.root, @config_root)
 
       raise "Please set config.destination" if config.destination.nil?
       self.destination_root = config.destination
       FileUtils.rm_rf(self.destination_root)
 
       #todo add to config
-      say "Deploying app: <#{options[:platform]}> <#{options[:environment]}>"
+      say "Deploying app: <#{@platform}> <#{options[:environment]}>"
       say "\t#{self.destination_root}"
       say " -Weinre url: #{@weinre_url}" if @weinre_url
 
@@ -56,8 +59,13 @@ module HighFive
 
       #   end
 
-      # Bundle is based on the provided build platform
-      bundle = builder.find_asset "app-#{@platform}"
+      # Bundle is based on the provided build platformx
+      platform_file = File.join(@config_root, "app-#{@platform}.js")
+      unless File.exists? platform_file
+        error "#{@platform} is not a valid target.  Please create app-#{@platform}.js"
+      end
+      bundle = builder.find_asset platform_file
+
       if (@environment == "production")
         appjs = File.join(self.destination_root, "app.js")
         @javascripts = ["app.js"]
@@ -71,6 +79,10 @@ module HighFive
         end
       end
       @stylesheets = []
+
+      config.sass_files.each do |sass_file|
+        require sass_file
+      end
             
       # Adds each of the static assets to the generated folder (sylesheets etc)
       config.static_assets.each do |asset|
@@ -87,7 +99,7 @@ module HighFive
           directory javascript
           @javascripts.unshift(*Dir[File.join(javascript,'**','*.js')])
         else
-          copy_file javascript
+          copy_file javascript unless javascript =~ /^https?:\/\// 
           @javascripts.unshift javascript
         end
       end
@@ -111,7 +123,8 @@ module HighFive
       # end
         
       # Build index.html
-      template "high_five.html.erb", File.join(self.destination_root, "index.html")
+      say "Generating index.html"
+      template File.join(@config_root, "high_five.html.erb"), File.join(self.destination_root, "index.html")
 
       # if (@copy_files) 
       #   dest = nil
@@ -138,7 +151,8 @@ module HighFive
 
     def get_builder
       builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
-      builder.append_path '.'
+      builder.append_path @config_root
+      builder.append_path "."
 
       builder
     end

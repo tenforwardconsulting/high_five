@@ -3,28 +3,22 @@
     <head>
         <meta charset="utf-8">
         <title><%= @meta[:title] %></title>
-        <meta name="description" content="<%= @meta[:description] %>" />     
-        
-        <% @stylesheets.each do |ss| %>
+        <meta name="description" content="<%= @meta[:description] %>" />
+        <% @stylesheets.each do |ss| -%>
             <link rel="stylesheet" href="<%= ss %>" type="text/css" />
-        <% end %>
-        
-        
-        <% if @platform != 'web' %>
-            <% if @environment == 'development' %>
+        <% end -%>
+        <% if @platform != 'web' -%>
+            <% if @environment == 'development' -%>
                 <script type="text/javascript">
-                window.onerror = function(e,u,l) {
-                  alert("Error caught" + e + " " + u + ":" + l);
-                };
-
+                    window.onerror = function(e,u,l) {
+                      alert("Error caught" + e + " " + u + ":" + l);
+                    };
                 </script>
-            <% end %>
-        <% end %>
-        
-
-        <% @javascripts.each do |js| %>
+            <% end -%>
+        <% end -%>
+        <%- @javascripts.each do |js| -%>
             <script type="text/javascript" src="<%= js %>"></script>
-        <% end %>	
+        <%- end -%>	
 
     </head>
     <body></body>

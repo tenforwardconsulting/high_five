@@ -13,13 +13,13 @@ module HighFive
     source_root(HighFive::TEMPLATE_PATH)
 
     desc "deploy", "Deploy the app for a specific platform in a specific environment"
-    method_option :platform, :aliases => "-p", :desc => "Platform [ios|android|web]", :default => "ios"
     method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
     method_option :compress, :aliases => '-c', :desc => "Compress javascript [true]", :default => false
     method_option :weinre_url, :aliases => '-w', :desc => "Enter your Weinre server-url including port", :default => false
     method_option :"copy-files", :aliases => '-f', :desc => "Copy files to eclipse/xcode directory", :default => false
-    def deploy
-      deploy_task
+    def deploy(target)
+      self.source_paths << File.join(base_config.root)
+      deploy_task(target)
     end
 
     desc "init", "Initialize the high_five configuration in the current working directory"
@@ -27,19 +27,11 @@ module HighFive
       init_task
     end
 
-    def initialize(args=[], options={}, config={})
-      super(args, options, config)
-
-      # Don't load config if user is doing >hi5 init
-      unless config[:current_task][:name] == "init"
-        self.source_paths << File.join(base_config.root)
-      end
-      # HighFive::Cli.source_root(File.join(base_config.root))
+    def initialize(*args)
+      super(*args)
     end
 
-
     private
-
     def base_config
       begin 
         @base_config ||= HighFive::Config.load
