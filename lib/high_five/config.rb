@@ -34,6 +34,7 @@ module HighFive
         new_config.static_assets += self.static_assets
         new_config.static_javascripts += self.static_javascripts
         new_config.static_stylesheets += self.static_stylesheets
+        new_config.sass_files += self.sass_files
         return new_config
       else
         return self
@@ -69,9 +70,12 @@ module HighFive
       @static_javascripts << path.dup
     end
 
-    def sass(config_file) 
-      puts "Compiling sass per #{config_file}"
-      @sass_files << config_file
+    def sass(path) 
+      @sass_files << path.dup
+    end
+
+    def compass(config_file)
+      @compass_configs << config_file.dup
     end
 
     def stylesheets(path)

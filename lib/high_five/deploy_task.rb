@@ -1,4 +1,5 @@
 require 'sprockets'
+require 'sass'
 module HighFive
   module DeployTask 
 
@@ -22,9 +23,7 @@ module HighFive
       say "\t#{self.destination_root}"
       say " -Weinre url: #{@weinre_url}" if @weinre_url
 
-      # Compile CSS
-      pwd = Dir.pwd
-      
+
       #todo customize this
       # Dir.chdir File.join("assets", "sass")
       # success = false
@@ -78,20 +77,6 @@ module HighFive
           asset.logical_path
         end
       end
-      @stylesheets = []
-
-      config.sass_files.each do |sass_file|
-        require sass_file
-      end
-            
-      # Adds each of the static assets to the generated folder (sylesheets etc)
-      config.static_assets.each do |asset|
-        if File.directory? asset
-          directory asset
-        else
-          copy_file asset
-        end
-      end
 
       # Adds each of the static javascripts
       config.static_javascripts.each do |javascript|
@@ -104,6 +89,16 @@ module HighFive
         end
       end
 
+      @stylesheets = []
+      p "SASS = #{config.sass_files}"
+      config.sass_files.each do |sass_file|
+        asset_name = File.basename(sass_file, File.extname(sass_file)) 
+        css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
+        say "Compiling #{sass_file} -> #{css_file}"
+        Sass.compile_file sass_file, css_file
+        @stylesheets.push sass_file
+      end
+
       config.static_stylesheets.each do |stylesheet|
         if File.directory? stylesheet
           directory stylesheet
@@ -111,6 +106,15 @@ module HighFive
         else
           copy_file stylesheet
           @stylesheets.unshift stylesheet
+        end
+      end
+
+      # Adds each of the static assets to the generated folder (sylesheets etc)
+      config.static_assets.each do |asset|
+        if File.directory? asset
+          directory asset
+        else
+          copy_file asset
         end
       end
 
@@ -151,7 +155,9 @@ module HighFive
       builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
       builder.append_path @config_root
       builder.append_path "."
+      builder.append_path base_config.root
 
+      p builder.paths
       builder
     end
 

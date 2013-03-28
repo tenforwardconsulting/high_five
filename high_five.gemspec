@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Brian Samson"]
   s.email       = ["brian@tenforwardconsulting.com"]
-  s.homepage    = ""
+  s.homepage    = "http://github.com/tenforwardconsulting/high_five"
   s.summary     = %q{HighFive is a set of build scripts and tools for packing HTML5 apps both for the web and for phonegap}
   s.description = %q{Write a better description}
 

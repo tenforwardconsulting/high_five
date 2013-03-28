@@ -6,7 +6,7 @@ HighFive::Config.configure do |config|
   # config.assets "resources"
 
   # Include javascript libraries
-  # These get included before everything else in the app
+  # These get included before everything else in the app, and are *not* minified
 
   # config.javascripts "http://maps.google.com/maps/api/js?sensor=true"
   # config.javascripts "lib/jquery-min.js"
@@ -19,6 +19,5 @@ HighFive::Config.configure do |config|
 
   # if you need platform-specific javascripts, 
   # simply create app-<platform>.js next too app.js
-
 
 end
