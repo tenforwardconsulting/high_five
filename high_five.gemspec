@@ -10,7 +10,10 @@ Gem::Specification.new do |s|
   s.email       = ["brian@tenforwardconsulting.com"]
   s.homepage    = "http://github.com/tenforwardconsulting/high_five"
   s.summary     = %q{HighFive is a set of build scripts and tools for packing HTML5 apps both for the web and for phonegap}
-  s.description = %q{Write a better description}
+  s.description = %q{Build, minify, and deal with different platforms and environments for your HTML5 app.  
+    This is often used with PhoneGap but designed not to require it, and high_five can be used to deploy any kind of HTML/JS/CSS-based
+    application that requires different deployment configurations.
+  }
 
   s.add_runtime_dependency "thor", "~>0.17.0"
   s.add_runtime_dependency "compass", "~>0.12.2"
