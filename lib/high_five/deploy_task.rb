@@ -90,7 +90,6 @@ module HighFive
       end
 
       @stylesheets = []
-      p "SASS = #{config.sass_files}"
       config.sass_files.each do |sass_file|
         asset_name = File.basename(sass_file, File.extname(sass_file)) 
         css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
@@ -157,7 +156,6 @@ module HighFive
       builder.append_path "."
       builder.append_path base_config.root
 
-      p builder.paths
       builder
     end
 
