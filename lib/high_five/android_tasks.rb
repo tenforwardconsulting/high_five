@@ -1,10 +1,17 @@
 module HighFive
   module AndroidTasks
-    desc "debug", "Deploy the app for a specific platform in a specific environment"
-    def debug
-      self.destination_root = HighFive::ROOT
-      puts "Debugy"
+    def self.included(mod)
+      mod.class_eval do 
 
+        namespace "android"
+        desc "android_debug", "build the debug apk via ant debug"
+        def android_debug
+          self.destination_root = HighFive::ROOT
+          puts "Debugy"
+        end
+
+
+      end #end class_eval
     end
   end
 end

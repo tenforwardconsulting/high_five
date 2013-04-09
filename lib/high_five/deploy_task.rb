@@ -3,183 +3,193 @@ require 'sass'
 module HighFive
   module DeployTask 
 
-    def deploy_task(target)
-      @environment  = options[:environment]
-      @platform     = target
-      @weinre_url   = options[:weinre_url]
-      @copy_files   = options[:"copy-files"]
-      @meta         = {}
-      @config       = base_config.build_platform_config(@platform)
-      @config_root  = File.join("config", "high_five")
+    def self.included(mod) 
+      mod.class_eval do 
+
+        desc "deploy", "Deploy the app for a specific platform in a specific environment"
+        method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
+        method_option :compress, :aliases => '-c', :desc => "Compress javascript [true]", :default => false
+        method_option :weinre_url, :aliases => '-w', :desc => "Enter your Weinre server-url including port", :default => false
+        method_option :"copy-files", :aliases => '-f', :desc => "Copy files to eclipse/xcode directory", :default => false
+        def deploy(target)
+          @environment  = options[:environment]
+          @platform     = target
+          @weinre_url   = options[:weinre_url]
+          @copy_files   = options[:"copy-files"]
+          @meta         = {}
+          @config       = base_config.build_platform_config(@platform)
+          @config_root  = File.join("config", "high_five")
+          
+          self.source_paths << File.join(base_config.root, @config_root)
+
+          raise "Please set config.destination" if @config.destination.nil?
+          self.destination_root = @config.destination
+          FileUtils.rm_rf(self.destination_root)
+
+          #todo add to config
+          say "Deploying app: <#{@platform}> <#{options[:environment]}>"
+          say "\t#{self.destination_root}"
+          say " -Weinre url: #{@weinre_url}" if @weinre_url
+
+
+          #todo customize this
+          # Dir.chdir File.join("assets", "sass")
+          # success = false
+          # if @environment == "production"
+          #   success = system("compass compile --force --no-debug-info -e production #{options[:platform]}.scss")
+          # else
+          #   success = system("compass compile --force --no-debug-info #{options[:platform]}.scss")
+          # end
+          # unless success
+          #   raise "Error compiling CSS, aborting build"
+          # end
+          # Dir.chdir pwd
+
+          # Build javascript
+          # inside "assets" do |assets|
+          #   directory "images"
+          #   directory "stylesheets"
+          #   inside "javascripts" do |dir|
+          #     if @compress == true
+          #       build_javascript :from => "app-#{@platform}", :to => 'app-all.js'
+          #       compress_javascript "app-all.js"
+          #     else      
+          #       bundle = builder.find_asset "app-#{@platform}"
+          #       @js_files = bundle.dependencies.map {|asset| File.join("assets",  asset.logical_path) }
+          #       copy_file "app.js"
+          #       directory "app"
+          #       directory "config"
+          #       directory "lib"
+          #       directory "platform/phonegap" unless @platform == 'web'
+          #       directory "platform/#{@platform}"
+          #     end
+
+          #   end
+
+          # Bundle is based on the provided build platformx
+          platform_file = File.join(@config_root, "app-#{@platform}.js")
+          unless File.exists? platform_file
+            error "#{@platform} is not a valid target.  Please create app-#{@platform}.js" and exit
+          end
+          bundle = builder.find_asset platform_file
+
+          if (@environment == "production")
+            appjs = File.join(self.destination_root, "app.js")
+            @javascripts = ["app.js"]
+            say "      create  #{appjs}", :green
+            bundle.write_to(appjs)
+          else
+            # Add each of the javascript files to the generated folder
+            @javascripts = bundle.dependencies.map do |asset| 
+              copy_file asset.logical_path
+              asset.logical_path
+            end
+          end
+
+          # Adds each of the static javascripts
+          @config.static_javascripts.each do |javascript|
+            if File.directory? javascript
+              directory javascript
+              @javascripts.unshift(*Dir[File.join(javascript,'**','*.js')])
+            else
+              copy_file javascript unless javascript =~ /^https?:\/\// 
+              @javascripts.unshift javascript
+            end
+          end
+
+          @stylesheets = []
+          @config.sass_files.each do |sass_file|
+            asset_name = File.basename(sass_file, File.extname(sass_file)) 
+            css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
+            say "Compiling #{sass_file} -> #{css_file}"
+            Sass.compile_file sass_file, css_file
+            @stylesheets.push sass_file
+          end
+
+          @config.static_stylesheets.each do |stylesheet|
+            if File.directory? stylesheet
+              directory stylesheet
+              @stylesheets.unshift(*Dir[File.join(stylesheet,'**','*.css')])
+            else
+              copy_file stylesheet
+              @stylesheets.unshift stylesheet
+            end
+          end
+
+          # Adds each of the static assets to the generated folder (sylesheets etc)
+          @config.static_assets.each do |asset|
+            if File.directory? asset
+              directory asset
+            else
+              copy_file asset
+            end
+          end
+
+          #   inside "stylesheets" do |dir|
+          #     # Copy generated css
+          #     copy_file "#{@platform}.css", "theme.css"
+          #   end
+          # end
+            
+          # Build index.html
+          say "Generating index.html"
+          template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
+
+          # if (@copy_files) 
+          #   dest = nil
+          #   # copy to platform build directories
+          #   if (@platform == 'android')
+          #     dest = File.join(HighFive::ROOT, "..", "account_assistant-android/assets/www")
+          #   elsif (@platform == 'ios') 
+          #     dest = File.join(HighFive::ROOT, "..", "account_assistant-ios/www")
+          #   end
+
+          #   if (!dest.nil? && File.exists?(dest))
+          #     say "Copying to #{@platform} native project: #{dest}"
+          #     FileUtils.rm_rf(dest)
+          #     directory self.destination_root, dest
+          #   end
+          # end
+        end
       
-      self.source_paths << File.join(base_config.root, @config_root)
+        private 
 
-      raise "Please set config.destination" if @config.destination.nil?
-      self.destination_root = @config.destination
-      FileUtils.rm_rf(self.destination_root)
-
-      #todo add to config
-      say "Deploying app: <#{@platform}> <#{options[:environment]}>"
-      say "\t#{self.destination_root}"
-      say " -Weinre url: #{@weinre_url}" if @weinre_url
-
-
-      #todo customize this
-      # Dir.chdir File.join("assets", "sass")
-      # success = false
-      # if @environment == "production"
-      #   success = system("compass compile --force --no-debug-info -e production #{options[:platform]}.scss")
-      # else
-      #   success = system("compass compile --force --no-debug-info #{options[:platform]}.scss")
-      # end
-      # unless success
-      #   raise "Error compiling CSS, aborting build"
-      # end
-      # Dir.chdir pwd
-
-      # Build javascript
-      # inside "assets" do |assets|
-      #   directory "images"
-      #   directory "stylesheets"
-      #   inside "javascripts" do |dir|
-      #     if @compress == true
-      #       build_javascript :from => "app-#{@platform}", :to => 'app-all.js'
-      #       compress_javascript "app-all.js"
-      #     else      
-      #       bundle = builder.find_asset "app-#{@platform}"
-      #       @js_files = bundle.dependencies.map {|asset| File.join("assets",  asset.logical_path) }
-      #       copy_file "app.js"
-      #       directory "app"
-      #       directory "config"
-      #       directory "lib"
-      #       directory "platform/phonegap" unless @platform == 'web'
-      #       directory "platform/#{@platform}"
-      #     end
-
-      #   end
-
-      # Bundle is based on the provided build platformx
-      platform_file = File.join(@config_root, "app-#{@platform}.js")
-      unless File.exists? platform_file
-        error "#{@platform} is not a valid target.  Please create app-#{@platform}.js" and exit
-      end
-      bundle = builder.find_asset platform_file
-
-      if (@environment == "production")
-        appjs = File.join(self.destination_root, "app.js")
-        @javascripts = ["app.js"]
-        say "      create  #{appjs}", :green
-        bundle.write_to(appjs)
-      else
-        # Add each of the javascript files to the generated folder
-        @javascripts = bundle.dependencies.map do |asset| 
-          copy_file asset.logical_path
-          asset.logical_path
+        def builder
+          @builder ||= get_builder
         end
-      end
 
-      # Adds each of the static javascripts
-      @config.static_javascripts.each do |javascript|
-        if File.directory? javascript
-          directory javascript
-          @javascripts.unshift(*Dir[File.join(javascript,'**','*.js')])
-        else
-          copy_file javascript unless javascript =~ /^https?:\/\// 
-          @javascripts.unshift javascript
+        def get_builder
+          builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
+          builder.append_path @config_root
+          builder.append_path "."
+          builder.append_path base_config.root
+          @config.asset_paths.each do |path|
+            builder.append_path File.join(base_config.root, path)
+          end
+
+          builder
         end
-      end
 
-      @stylesheets = []
-      @config.sass_files.each do |sass_file|
-        asset_name = File.basename(sass_file, File.extname(sass_file)) 
-        css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
-        say "Compiling #{sass_file} -> #{css_file}"
-        Sass.compile_file sass_file, css_file
-        @stylesheets.push sass_file
-      end
+        #TODO: this probably doesn't work on windows 
+        def compress_javascript(file_name)
+          say " -Compressing #{file_name} with yuicompressor", :yellow
 
-      @config.static_stylesheets.each do |stylesheet|
-        if File.directory? stylesheet
-          directory stylesheet
-          @stylesheets.unshift(*Dir[File.join(stylesheet,'**','*.css')])
-        else
-          copy_file stylesheet
-          @stylesheets.unshift stylesheet
+          compressor = 'yuicompressor'
+          if `which yuicompressor`.empty?
+            compressor = 'yui-compressor'
+            if `which yui-compressor`.empty?
+              say "ERROR: you don't have a yuicompressor installed", :red
+              say " Are you sure yuicompressor is installed on your system?  Mac users, run this in console:", :red
+              say " $ brew install yuicompressor", :red
+              say " Ubuntu users: $sudo apt-get -y install yui-compressor", :red
+            end
+          end
+          cmd = "#{compressor} #{file_name} -o #{file_name}"
+          system(cmd)
+          unless $?.exitstatus == 0
+            say " ERROR: #{cmd}", :red
+          end
         end
-      end
-
-      # Adds each of the static assets to the generated folder (sylesheets etc)
-      @config.static_assets.each do |asset|
-        if File.directory? asset
-          directory asset
-        else
-          copy_file asset
-        end
-      end
-
-      #   inside "stylesheets" do |dir|
-      #     # Copy generated css
-      #     copy_file "#{@platform}.css", "theme.css"
-      #   end
-      # end
-        
-      # Build index.html
-      say "Generating index.html"
-      template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
-
-      # if (@copy_files) 
-      #   dest = nil
-      #   # copy to platform build directories
-      #   if (@platform == 'android')
-      #     dest = File.join(HighFive::ROOT, "..", "account_assistant-android/assets/www")
-      #   elsif (@platform == 'ios') 
-      #     dest = File.join(HighFive::ROOT, "..", "account_assistant-ios/www")
-      #   end
-
-      #   if (!dest.nil? && File.exists?(dest))
-      #     say "Copying to #{@platform} native project: #{dest}"
-      #     FileUtils.rm_rf(dest)
-      #     directory self.destination_root, dest
-      #   end
-      # end
-    end
-  
-    private 
-
-    def builder
-      @builder ||= get_builder
-    end
-
-    def get_builder
-      builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
-      builder.append_path @config_root
-      builder.append_path "."
-      builder.append_path base_config.root
-      @config.asset_paths.each do |path|
-        builder.append_path File.join(base_config.root, path)
-      end
-
-      builder
-    end
-
-    #TODO: this probably doesn't work on windows 
-    def compress_javascript(file_name)
-      say " -Compressing #{file_name} with yuicompressor", :yellow
-
-      compressor = 'yuicompressor'
-      if `which yuicompressor`.empty?
-        compressor = 'yui-compressor'
-        if `which yui-compressor`.empty?
-          say "ERROR: you don't have a yuicompressor installed", :red
-          say " Are you sure yuicompressor is installed on your system?  Mac users, run this in console:", :red
-          say " $ brew install yuicompressor", :red
-          say " Ubuntu users: $sudo apt-get -y install yui-compressor", :red
-        end
-      end
-      cmd = "#{compressor} #{file_name} -o #{file_name}"
-      system(cmd)
-      unless $?.exitstatus == 0
-        say " ERROR: #{cmd}", :red
       end
     end
   end

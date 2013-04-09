@@ -25,6 +25,10 @@ module HighFive
       return @@instance 
     end
 
+    def self.instance
+      @@instance
+    end
+
     def build_platform_config(platform)
       if @platform_configs[platform.to_s]
         new_config = HighFive::Config.new(@platform_configs[platform.to_s])
@@ -36,6 +40,7 @@ module HighFive
         new_config.static_javascripts += self.static_javascripts
         new_config.static_stylesheets += self.static_stylesheets
         new_config.sass_files += self.sass_files
+        new_config.asset_paths += self.asset_paths
         return new_config
       else
         return self
