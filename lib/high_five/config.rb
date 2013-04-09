@@ -7,7 +7,8 @@ module HighFive
       :static_assets,
       :static_javascripts,
       :static_stylesheets,
-      :sass_files
+      :sass_files,
+      :asset_paths
 
 
     def self.configure(&block) 
@@ -48,6 +49,7 @@ module HighFive
         @static_stylesheets = config.static_stylesheets.dup
         @sass_files = config.sass_files.dup
         @meta = config.meta.dup
+        @asset_paths = config.asset_paths.dup
         self.root = config.root
         self.destination = config.destination
         self.page_title = config.page_title
@@ -59,6 +61,7 @@ module HighFive
         @sass_files = []
         @meta = {}
         @platform_configs = {}
+        @asset_paths = []
       end
     end 
 

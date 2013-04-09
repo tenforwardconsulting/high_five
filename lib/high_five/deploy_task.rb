@@ -9,13 +9,13 @@ module HighFive
       @weinre_url   = options[:weinre_url]
       @copy_files   = options[:"copy-files"]
       @meta         = {}
-      config = base_config.build_platform_config(@platform)
-      @config_root = File.join("config", "high_five")
-
+      @config       = base_config.build_platform_config(@platform)
+      @config_root  = File.join("config", "high_five")
+      
       self.source_paths << File.join(base_config.root, @config_root)
 
-      raise "Please set config.destination" if config.destination.nil?
-      self.destination_root = config.destination
+      raise "Please set config.destination" if @config.destination.nil?
+      self.destination_root = @config.destination
       FileUtils.rm_rf(self.destination_root)
 
       #todo add to config
@@ -61,7 +61,7 @@ module HighFive
       # Bundle is based on the provided build platformx
       platform_file = File.join(@config_root, "app-#{@platform}.js")
       unless File.exists? platform_file
-        error "#{@platform} is not a valid target.  Please create app-#{@platform}.js"
+        error "#{@platform} is not a valid target.  Please create app-#{@platform}.js" and exit
       end
       bundle = builder.find_asset platform_file
 
@@ -79,7 +79,7 @@ module HighFive
       end
 
       # Adds each of the static javascripts
-      config.static_javascripts.each do |javascript|
+      @config.static_javascripts.each do |javascript|
         if File.directory? javascript
           directory javascript
           @javascripts.unshift(*Dir[File.join(javascript,'**','*.js')])
@@ -90,7 +90,7 @@ module HighFive
       end
 
       @stylesheets = []
-      config.sass_files.each do |sass_file|
+      @config.sass_files.each do |sass_file|
         asset_name = File.basename(sass_file, File.extname(sass_file)) 
         css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
         say "Compiling #{sass_file} -> #{css_file}"
@@ -98,7 +98,7 @@ module HighFive
         @stylesheets.push sass_file
       end
 
-      config.static_stylesheets.each do |stylesheet|
+      @config.static_stylesheets.each do |stylesheet|
         if File.directory? stylesheet
           directory stylesheet
           @stylesheets.unshift(*Dir[File.join(stylesheet,'**','*.css')])
@@ -109,7 +109,7 @@ module HighFive
       end
 
       # Adds each of the static assets to the generated folder (sylesheets etc)
-      config.static_assets.each do |asset|
+      @config.static_assets.each do |asset|
         if File.directory? asset
           directory asset
         else
@@ -155,6 +155,9 @@ module HighFive
       builder.append_path @config_root
       builder.append_path "."
       builder.append_path base_config.root
+      @config.asset_paths.each do |path|
+        builder.append_path File.join(base_config.root, path)
+      end
 
       builder
     end
