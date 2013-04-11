@@ -21,6 +21,7 @@ module HighFive
           @config_root  = File.join("config", "high_five")
           
           self.source_paths << File.join(base_config.root, @config_root)
+          self.source_paths << File.join(base_config.root)
 
           raise "Please set config.destination" if @config.destination.nil?
           self.destination_root = @config.destination
@@ -160,11 +161,13 @@ module HighFive
 
         def get_builder
           builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
-          builder.append_path @config_root
           builder.append_path "."
           builder.append_path base_config.root
+          builder.append_path File.join(base_config.root, @config_root)
           @config.asset_paths.each do |path|
-            builder.append_path File.join(base_config.root, path)
+            full_path = File.join(base_config.root, path)
+            puts "adding path #{full_path}"
+            builder.append_path full_path
           end
 
           builder

@@ -11,7 +11,7 @@ module HighFive
     include HighFive::DeployTask
     include HighFive::AndroidTasks
     # source root path for Thor::Actions commands
-    source_root(HighFive::TEMPLATE_PATH)
+    source_root(HighFive::ROOT)
 
    
     private
