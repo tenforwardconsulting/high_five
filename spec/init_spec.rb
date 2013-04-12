@@ -7,7 +7,6 @@ describe "InitTask" do
     @original_dir = Dir.pwd
     @project_root = Dir.mktmpdir("hi5")
     Dir.chdir @project_root
-    HighFive::ROOT = @project_root
   end
 
   after :each do

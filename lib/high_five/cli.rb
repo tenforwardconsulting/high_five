@@ -11,12 +11,11 @@ module HighFive
     include HighFive::DeployTask
     include HighFive::AndroidTasks
     # source root path for Thor::Actions commands
-    source_root(HighFive::ROOT)
+    
 
     class_option :version, type: :boolean, desc: "Print version and ext", aliases: "-v"
     def initialize(*args)
       super
-      
       if options[:version]
         puts "HighFive #{HighFive::VERSION}" 
         Process.exit(0)

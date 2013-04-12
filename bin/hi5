@@ -12,7 +12,6 @@ rescue LoadError
   require 'rubygems'
   require 'high_five'
 end
-HighFive::ROOT = Dir.pwd
 require 'high_five/cli'
 
 HighFive::Cli.start

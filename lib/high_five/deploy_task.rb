@@ -33,10 +33,15 @@ module HighFive
           say " -Weinre url: #{@weinre_url}" if @weinre_url
 
 
-          #todo customize this
+          
           if @config.compass_dir
-            Dir.chdir File.join(@config.compass_dir)
-            # success = false
+            compass_dir = File.join(base_config.root, @config.compass_dir)
+            pwd = Dir.pwd
+            Dir.chdir compass_dir
+            # TODO make this invoke compass programatically
+            # Consider using sprockets for css too, although I kindof hate that
+            say "Precompiling compass styles from #{compass_dir}}"
+            success = false
             if @environment == "production"
               success = system("compass compile --force --no-debug-info -e production")
             else
@@ -48,33 +53,14 @@ module HighFive
             Dir.chdir pwd
           end
 
-          # Build javascript
-          # inside "assets" do |assets|
-          #   directory "images"
-          #   directory "stylesheets"
-          #   inside "javascripts" do |dir|
-          #     if @compress == true
-          #       build_javascript :from => "app-#{@platform}", :to => 'app-all.js'
-          #       compress_javascript "app-all.js"
-          #     else      
-          #       bundle = builder.find_asset "app-#{@platform}"
-          #       @js_files = bundle.dependencies.map {|asset| File.join("assets",  asset.logical_path) }
-          #       copy_file "app.js"
-          #       directory "app"
-          #       directory "config"
-          #       directory "lib"
-          #       directory "platform/phonegap" unless @platform == 'web'
-          #       directory "platform/#{@platform}"
-          #     end
-
-          #   end
-
           # Bundle is based on the provided build platformx
           platform_file = File.join(@config_root, "app-#{@platform}.js")
-          unless File.exists? platform_file
-            error "#{@platform} is not a valid target.  Please create app-#{@platform}.js" and exit
-          end
           bundle = builder.find_asset platform_file
+          if bundle.nil?
+            p source_paths
+            error "#{@platform} is not a valid target.  Please create #{platform_file}" and Process.exit
+          end
+          
 
           if (@environment == "production")
             appjs = File.join(self.destination_root, "app.js")
@@ -83,7 +69,8 @@ module HighFive
             bundle.write_to(appjs)
           else
             # Add each of the javascript files to the generated folder
-            @javascripts = bundle.dependencies.map do |asset| 
+            @javascripts = bundle.dependencies.map do |asset|
+              next if asset.logical_path =~ /^config\/high_five/ #don't copy manifest files
               copy_file asset.logical_path
               asset.logical_path
             end
@@ -106,7 +93,8 @@ module HighFive
             css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
             say "Compiling #{sass_file} -> #{css_file}"
             Sass.compile_file sass_file, css_file
-            @stylesheets.push sass_file
+            @stylesheets.push css_file
+            copy_file css_file
           end
 
           @config.static_stylesheets.each do |stylesheet|
@@ -128,31 +116,9 @@ module HighFive
             end
           end
 
-          #   inside "stylesheets" do |dir|
-          #     # Copy generated css
-          #     copy_file "#{@platform}.css", "theme.css"
-          #   end
-          # end
-            
           # Build index.html
           say "Generating index.html"
           template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
-
-          # if (@copy_files) 
-          #   dest = nil
-          #   # copy to platform build directories
-          #   if (@platform == 'android')
-          #     dest = File.join(HighFive::ROOT, "..", "account_assistant-android/assets/www")
-          #   elsif (@platform == 'ios') 
-          #     dest = File.join(HighFive::ROOT, "..", "account_assistant-ios/www")
-          #   end
-
-          #   if (!dest.nil? && File.exists?(dest))
-          #     say "Copying to #{@platform} native project: #{dest}"
-          #     FileUtils.rm_rf(dest)
-          #     directory self.destination_root, dest
-          #   end
-          # end
         end
       
         private 
@@ -162,16 +128,14 @@ module HighFive
         end
 
         def get_builder
-          builder = Sprockets::Environment.new(File.join(HighFive::ROOT))
-          builder.append_path "."
+          builder = Sprockets::Environment.new(File.join(base_config.root))
           builder.append_path base_config.root
           builder.append_path File.join(base_config.root, @config_root)
           @config.asset_paths.each do |path|
             full_path = File.join(base_config.root, path)
-            puts "adding path #{full_path}"
+            say "adding asset search path #{full_path}"
             builder.append_path full_path
           end
-
           builder
         end
 

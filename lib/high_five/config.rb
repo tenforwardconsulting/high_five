@@ -8,17 +8,22 @@ module HighFive
       :static_javascripts,
       :static_stylesheets,
       :sass_files,
-      :asset_paths
+      :asset_paths,
+      :compass_dir
 
 
     def self.configure(&block) 
       @@instance = HighFive::Config.new
       yield @@instance
+
+      if @@instance.root.nil?
+        raise "HighFive::Config.root is required"
+      end
     end
 
     def self.load
       begin
-        require File.join(HighFive::ROOT, "config", "high_five.rb")
+        require File.join(Dir.pwd, "config", "high_five.rb")
       rescue LoadError
         raise "high_five configuration not found, forgot to run 'hi5 init'?"
       end
@@ -41,6 +46,7 @@ module HighFive
         new_config.static_stylesheets += self.static_stylesheets
         new_config.sass_files += self.sass_files
         new_config.asset_paths += self.asset_paths
+        new_config.compass_dir ||= self.compass_dir
         return new_config
       else
         return self

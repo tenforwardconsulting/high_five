@@ -6,7 +6,7 @@ module HighFive
         namespace "android"
         desc "android_debug", "build the debug apk via ant debug"
         def android_debug
-          self.destination_root = HighFive::ROOT
+          self.destination_root = base_config.root
           puts "Debugy"
         end
 
