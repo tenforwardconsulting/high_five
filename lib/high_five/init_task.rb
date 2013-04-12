@@ -7,6 +7,7 @@ module HighFive
         desc "init", "Initialize the high_five configuration in the current working directory"
         def init
           self.destination_root = HighFive::ROOT
+          self.source_paths << HighFive::TEMPLATE_PATH
 
           inside "config" do
             template("high_five.rb")

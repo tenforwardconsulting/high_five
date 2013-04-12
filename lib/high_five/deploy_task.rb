@@ -34,17 +34,19 @@ module HighFive
 
 
           #todo customize this
-          # Dir.chdir File.join("assets", "sass")
-          # success = false
-          # if @environment == "production"
-          #   success = system("compass compile --force --no-debug-info -e production #{options[:platform]}.scss")
-          # else
-          #   success = system("compass compile --force --no-debug-info #{options[:platform]}.scss")
-          # end
-          # unless success
-          #   raise "Error compiling CSS, aborting build"
-          # end
-          # Dir.chdir pwd
+          if @config.compass_dir
+            Dir.chdir File.join(@config.compass_dir)
+            # success = false
+            if @environment == "production"
+              success = system("compass compile --force --no-debug-info -e production")
+            else
+              success = system("compass compile --force --no-debug-info")
+            end
+            unless success
+              raise "Error compiling CSS, aborting build"
+            end
+            Dir.chdir pwd
+          end
 
           # Build javascript
           # inside "assets" do |assets|
