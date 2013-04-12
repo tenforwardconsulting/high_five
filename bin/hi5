@@ -5,14 +5,14 @@ bin_file = Pathname.new(__FILE__).realpath
 
 # add self to libpath
 $:.unshift File.expand_path("../../lib", bin_file)
-HighFive::ROOT = Dir.pwd
+
 begin
   require 'high_five'
 rescue LoadError
   require 'rubygems'
   require 'high_five'
 end
-
+HighFive::ROOT = Dir.pwd
 require 'high_five/cli'
 
 HighFive::Cli.start
