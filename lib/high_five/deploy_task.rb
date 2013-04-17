@@ -36,11 +36,11 @@ module HighFive
           
           if @config.compass_dir
             compass_dir = File.join(base_config.root, @config.compass_dir)
+            say "Precompiling compass styles from #{compass_dir}}"
             pwd = Dir.pwd
             Dir.chdir compass_dir
             # TODO make this invoke compass programatically
             # Consider using sprockets for css too, although I kindof hate that
-            say "Precompiling compass styles from #{compass_dir}}"
             success = false
             if @environment == "production"
               success = system("compass compile --force --no-debug-info -e production")
@@ -69,10 +69,11 @@ module HighFive
             bundle.write_to(appjs)
           else
             # Add each of the javascript files to the generated folder
-            @javascripts = bundle.dependencies.map do |asset|
+            @javascripts = []
+            bundle.dependencies.each do |asset|
               next if asset.logical_path =~ /^config\/high_five/ #don't copy manifest files
               copy_file asset.logical_path
-              asset.logical_path
+              @javascripts << asset.logical_path
             end
           end
 

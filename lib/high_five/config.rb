@@ -88,8 +88,8 @@ module HighFive
       @sass_files << path.dup
     end
 
-    def compass(config_file)
-      @compass_configs << config_file.dup
+    def compass(config_dir)
+      @compass_dir = config_dir
     end
 
     def stylesheets(path)
