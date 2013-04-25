@@ -19,4 +19,63 @@ describe HighFive::Config do
     end
   end
 
+  context "settings" do 
+    before do 
+      HighFive::Config.configure do |config|
+        config.root = "/"
+        config.setting base_url: "http://example.com/api"
+        config.environment :production do |production|
+          production.setting base_url: "http://production.example.com/api"
+        end
+      end
+      @config = HighFive::Config.instance
+    end
+
+    it "should serialize all the settings to json" do
+      @config.high_five_javascript.should eq %q(<script type="text/javascript">if(typeof(window.HighFive)==='undefined'){window.HighFive={};}window.HighFive.Settings={"base_url":"http://example.com/api"};</script>)
+    end
+
+    example "platform settings should take precedence" do 
+      prod = @config.build_platform_config :production
+      prod.js_settings[:base_url].should eq "http://production.example.com/api"
+    end
+
+  end
+
+  context "environment configuration" do 
+    before do 
+      HighFive::Config.configure do |config|
+        config.root = "/"
+        config.setting base_url: "http://example.com/api"
+        config.platform :android do |android|
+          android.assets "android_asset"
+          android.setting android_flag: true
+        end
+        config.environment :production do |production|
+          production.assets "production_asset"
+          production.setting base_url: "http://production.example.com/api"
+        end
+      end
+      @config = HighFive::Config.instance
+    end
+
+    it "inherits from platforms" do 
+      config = @config.build_platform_config(:android).build_platform_config(:production)
+      config.static_assets.should include "android_asset"
+      config.static_assets.should include "production_asset"
+    end
+
+    it "doesn't care about the inherit order" do 
+      config = @config.build_platform_config(:production).build_platform_config(:android)
+      config.static_assets.should include "android_asset"
+      config.static_assets.should include "production_asset"
+    end
+
+    it "merges settings" do 
+      config = @config.build_platform_config(:android).build_platform_config(:production)
+      config.js_settings.should be_has_key(:base_url)
+      config.js_settings.should be_has_key(:android_flag)
+    end
+  end
+
 end

@@ -1,3 +1,4 @@
+require 'json'
 module HighFive
   class Config
     attr_accessor :root,         # Root of the project 
@@ -9,7 +10,10 @@ module HighFive
       :static_stylesheets,
       :sass_files,
       :asset_paths,
-      :compass_dir
+      :platform_configs,
+      :compass_dir,
+      :js_settings, #serialized out to HighFive.Settings in index.html
+      :is_environment #boolean for if this config is an environment platform
 
 
     def self.configure(&block) 
@@ -47,6 +51,12 @@ module HighFive
         new_config.sass_files += self.sass_files
         new_config.asset_paths += self.asset_paths
         new_config.compass_dir ||= self.compass_dir
+        new_config.js_settings.merge! self.js_settings do |key, new_setting, old_setting| 
+          new_setting || old_setting #don't clobber settings from the parent
+        end
+        new_config.platform_configs = @platform_configs.reject do |key, platform_config|
+          key == platform
+        end
         return new_config
       else
         return self
@@ -61,6 +71,7 @@ module HighFive
         @sass_files = config.sass_files.dup
         @meta = config.meta.dup
         @asset_paths = config.asset_paths.dup
+        @js_settings = config.js_settings.dup
         self.root = config.root
         self.destination = config.destination
         self.page_title = config.page_title
@@ -73,7 +84,9 @@ module HighFive
         @meta = {}
         @platform_configs = {}
         @asset_paths = []
+        @js_settings = {}
       end
+      @is_environment = false
     end 
 
     def assets(path)
@@ -99,6 +112,23 @@ module HighFive
     def platform(name, &block)
       @platform_configs[name.to_s] = HighFive::Config.new
       yield @platform_configs[name.to_s]
+    end
+
+    def environment(name, &block)
+      platform(name, &block)
+      @platform_configs[name.to_s].is_environment = true
+    end
+
+    def setting(hash)
+      @js_settings.merge!(hash)
+    end
+    alias settings setting
+
+    def high_five_javascript
+      js = '<script type="text/javascript">'
+      js += "if(typeof(window.HighFive)==='undefined'){window.HighFive={};}window.HighFive.Settings=#{JSON.dump(js_settings)};"
+      js += '</script>'
+      js
     end
   end
 end

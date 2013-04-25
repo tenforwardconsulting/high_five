@@ -11,6 +11,16 @@ HighFive::Config.configure do |config|
   # config.javascripts "http://maps.google.com/maps/api/js?sensor=true"
   # config.javascripts "lib/jquery-min.js"
 
+  # Run `compass compile` in this directory before doing anything
+  # config.compass "resources/sass"
+
+  # copy and include these stylesheets in the html
+  # config.stylesheets "resources/css/app.css"
+  # config.stylesheets "resources/css/jquery-ui.css"
+
+  # Basic key/value settings that will be available to your javascript
+  # config.setting base_url: "http://dev.example.com/api" # HighFive.settings.base_url = "http://dev.example.com/api"
+
   # Configure plaform specific settings like this
   # config.platform :ios do |ios|
   #   ios.assets "resources/ios"
@@ -18,6 +28,14 @@ HighFive::Config.configure do |config|
   # end
 
   # if you need platform-specific javascripts, 
-  # simply create app-<platform>.js next too app.js
+  # simply create app-<platform>.js 
+  # these files are managed by sprockets, and are used to determine the javascript include order
+
+  # Environment support: production/development/etc
+  # Environments work just like platforms
+  # config.environment :production do |prod|
+  #   production.javascripts "settings/production.js"
+  #   production.setting base_url: "http://production.example.com/api/" #these take precedence over the platform overrides
+  # end
 
 end

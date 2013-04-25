@@ -16,6 +16,7 @@
                 </script>
             <% end -%>
         <% end -%>
+        <%= @high_five_javascript %>
         <%- @javascripts.each do |js| -%>
             <script type="text/javascript" src="<%= js %>"></script>
         <%- end -%>	

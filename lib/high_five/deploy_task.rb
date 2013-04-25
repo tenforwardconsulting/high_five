@@ -17,7 +17,7 @@ module HighFive
           @weinre_url   = options[:weinre_url]
           @copy_files   = options[:"copy-files"]
           @meta         = {}
-          @config       = base_config.build_platform_config(@platform)
+          @config       = base_config.build_platform_config(@platform).build_platform_config(@environment)
           @config_root  = File.join("config", "high_five")
           
           self.source_paths << File.join(base_config.root, @config_root)
@@ -117,6 +117,7 @@ module HighFive
             end
           end
 
+          @high_five_javascript = @config.high_five_javascript
           # Build index.html
           say "Generating index.html"
           template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
