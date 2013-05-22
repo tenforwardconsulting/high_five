@@ -13,7 +13,8 @@ module HighFive
       :platform_configs,
       :compass_dir,
       :js_settings, #serialized out to HighFive.Settings in index.html
-      :is_environment #boolean for if this config is an environment platform
+      :is_environment, #boolean for if this config is an environment platform
+      :dev_index #copy generated index.html to here on build for use in development
 
 
     def self.configure(&block) 
@@ -51,6 +52,7 @@ module HighFive
         new_config.sass_files += self.sass_files
         new_config.asset_paths += self.asset_paths
         new_config.compass_dir ||= self.compass_dir
+        new_config.dev_index ||= self.dev_index
         new_config.js_settings.merge! self.js_settings do |key, new_setting, old_setting| 
           new_setting || old_setting #don't clobber settings from the parent
         end
@@ -129,6 +131,18 @@ module HighFive
       js += "if(typeof(window.HighFive)==='undefined'){window.HighFive={};}window.HighFive.Settings=#{JSON.dump(js_settings)};"
       js += '</script>'
       js
+    end
+
+    #easy setters
+
+    def dev_index(*args)
+      @dev_index = args[0] if args.length == 1
+      @dev_index 
+    end
+
+    def destination(*args)
+      @destination = args[0] if args.length == 1
+      @destination
     end
   end
 end

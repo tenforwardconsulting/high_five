@@ -45,6 +45,7 @@ describe HighFive::DeployTask do
       File.join(@project_root, "www", "javascripts", "app").should exist
       File.join(@project_root, "www", "javascripts", "app", "component.js").should exist
     end
+
   end
 
   context "SASS Deployment" do 
@@ -73,7 +74,30 @@ describe HighFive::DeployTask do
       pending "better compass integration"
       expect(File.join(@project_root, "www", "stylesheets", "screen.css")).to exist
     end
+  end
 
+  context "Development environment" do 
+    before :all do
+      create_dummy_app!
+      HighFive::Config.configure do |config|
+        config.root = @project_root
+        config.destination = "www"
+        config.compass_dir = "."
+        config.assets "stylesheets"
+        config.platform :web do |web|
+          config.destination "www-web"
+          config.dev_index "index-debug.html"
+        end
+
+        cli.deploy("web")
+      end
+    end
+
+    it "should clone index.html to index-debug.html when directed" do 
+      index = File.read(File.join(@project_root, "www-web", "index.html"))
+      index_debug = File.read(File.join(@project_root, "index-debug.html"))
+      index.should eq index_debug
+    end
   end
 
 end

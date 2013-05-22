@@ -1,4 +1,4 @@
-high_five
+High Five
 =========
 
 HTML5 build/deploy tool, usually used with PhoneGap. 

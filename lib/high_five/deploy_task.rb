@@ -121,6 +121,10 @@ module HighFive
           # Build index.html
           say "Generating index.html"
           template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
+          if (@config.dev_index)
+            say "Cloning to #{@config.dev_index}"
+            FileUtils.cp(File.join(self.destination_root, "index.html"), File.join(@config.root, @config.dev_index))
+          end
         end
       
         private 
