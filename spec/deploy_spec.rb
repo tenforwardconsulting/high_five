@@ -109,6 +109,7 @@ describe HighFive::DeployTask do
         config.assets "stylesheets"
         config.platform :web do |web|
            config.dev_index "index-debug.html"
+           config.manifest = true
         end
         config.environment :production do |prod|
 
@@ -125,6 +126,9 @@ describe HighFive::DeployTask do
     end
     it "should not clone index.html to index-debug.html" do 
       File.exist?(File.join(@project_root, "index-debug.html")).should be_false
+    end
+    it "should generate an html manifest" do 
+      expect(File.join(@project_root, "www", "manifest.appcache")).to exist
     end
   end
 

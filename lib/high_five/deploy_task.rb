@@ -24,6 +24,8 @@ module HighFive
           
           self.source_paths << File.join(base_config.root, @config_root)
           self.source_paths << File.join(base_config.root)
+          self.source_paths << File.join(File.dirname(__FILE__), 'generators')
+
 
           raise "Please set config.destination" if @config.destination.nil?
           self.destination_root = @config.destination
@@ -40,8 +42,6 @@ module HighFive
             say "Precompiling compass styles from #{compass_dir}}"
             pwd = Dir.pwd
             Dir.chdir compass_dir
-            # TODO make this invoke compass programatically
-            # Consider using sprockets for css too, although I kindof hate that
             success = false
             if @environment == "production"
               success = system("compass compile --force --no-debug-info -e production")
@@ -130,6 +130,23 @@ module HighFive
             else
               copy_file asset
             end
+          end
+
+          if (@config.manifest && @environment == 'production')
+            @manifest_attr = %Q(manifest="manifest.appcache") #for <html manifest=>
+            say "     create manifest", :green
+            @manifest_cache = @config.static_assets.collect do |path|
+              if (File.directory?(path))
+                Dir.glob(path + "/**/*")
+              else
+                path
+              end
+            end.flatten
+
+            @manifest_cache += @javascripts
+            @manifest_cache += @stylesheets
+
+            template "manifest.erb", File.join(self.destination_root, "manifest.appcache")
           end
 
           @high_five_javascript = @config.high_five_javascript

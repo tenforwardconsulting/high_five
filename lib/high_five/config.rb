@@ -1,21 +1,41 @@
 require 'json'
 module HighFive
   class Config
-    attr_accessor :root,         # Root of the project 
-      :destination,  # generated folder for project('www')
-      :page_title,   # <title>#{page_title}</title>
-      :meta,          # config.meta << { http-equiv: "Content-Type" content: "text/html; charset=utf-8" }
-      :static_assets,
-      :static_javascripts,
-      :static_stylesheets,
-      :sass_files,
-      :asset_paths,
-      :platform_configs,
-      :compass_dir,
-      :js_settings, #serialized out to HighFive.Settings in index.html
-      :is_environment, #boolean for if this config is an environment platform
-      :dev_index, #copy generated index.html to here on build for use in development
-      :minify #defaults to true in production mode and false otherwise, overridable
+    attr_accessor :meta,          # config.meta << { http-equiv: "Content-Type" content: "text/html; charset=utf-8" }
+                  :static_assets,
+                  :static_javascripts,
+                  :static_stylesheets,
+                  :sass_files,
+                  :asset_paths,
+                  :platform_configs,
+                  :js_settings, #serialized out to HighFive.Settings in index.html
+                  :is_environment #boolean for if this config is an environment platform
+
+
+    # shorthand for me to define lots and lots of config settings that need to be handled
+    # as attr_accessible, settable via setting(blah) instead of settings=blah, and also 
+    # persisted to derived platform configs
+    def self.config_setting(*settings)
+      config_variables = []
+      settings.each do |setting|
+        attr_accessor setting
+        define_method setting do |*args|
+          var = "@#{setting}".to_sym
+          config_variables << var
+          instance_variable_set(var, args[0]) if args.length == 1
+          instance_variable_get(var)
+        end
+      end
+      @@config_variables = config_variables
+    end
+
+    config_setting :root,         # Root of the project 
+                   :destination,  # generated folder for project('www')
+                   :page_title,   # <title>#{page_title}</title>
+                   :compass_dir,  # directory that contaings compass' config.rb
+                   :dev_index,    # copy generated index.html to here on build for use in development
+                   :minify,       # defaults to true in production mode and false otherwise, overridable
+                   :manifest      # generate html5 manifest
 
 
     def self.configure(&block) 
@@ -52,9 +72,11 @@ module HighFive
         new_config.static_stylesheets += self.static_stylesheets
         new_config.sass_files += self.sass_files
         new_config.asset_paths += self.asset_paths
-        new_config.compass_dir ||= self.compass_dir
-        new_config.dev_index ||= self.dev_index
-        new_config.minify ||= self.minify
+        @@config_variables.each do |svar|
+          if (new_config.instance_variable_get(svar).nil?)
+            new_config.instance_variable_set(svar, self.instance_variable_get(svar))
+          end
+        end
         new_config.js_settings.merge! self.js_settings do |key, new_setting, old_setting| 
           new_setting || old_setting #don't clobber settings from the parent
         end
@@ -82,6 +104,12 @@ module HighFive
         self.page_title = config.page_title
         self.meta = config.meta
         self.minify = config.minify
+        self.manifest = config.manifest
+        @@config_variables.each do |svar|
+          if (self.instance_variable_get(svar).nil?)
+            self.instance_variable_set(svar, config.instance_variable_get(svar))
+          end
+        end
       else
         @static_assets = []
         @static_javascripts = []
@@ -105,10 +133,6 @@ module HighFive
 
     def sass(path) 
       @sass_files << path.dup
-    end
-
-    def compass(config_dir)
-      @compass_dir = config_dir
     end
 
     def stylesheets(path)
@@ -141,18 +165,5 @@ module HighFive
       js
     end
 
-    #easy setters
-
-    def dev_index(*args)
-      if args.length == 1
-        @dev_index = args[0] 
-      end
-      @dev_index 
-    end
-
-    def destination(*args)
-      @destination = args[0] if args.length == 1
-      @destination
-    end
   end
 end
