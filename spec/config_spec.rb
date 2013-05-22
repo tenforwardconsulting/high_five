@@ -76,6 +76,13 @@ describe HighFive::Config do
       config.js_settings.should be_has_key(:base_url)
       config.js_settings.should be_has_key(:android_flag)
     end
+
+    it "sets minify to true by default for production environments" do
+      config = @config.build_platform_config('android').build_platform_config('production')
+      config.minify.should eq :uglifier
+      config = @config.build_platform_config(:production).build_platform_config(:android)
+      config.minify.should eq :uglifier
+    end
   end
 
   context "easy settings" do

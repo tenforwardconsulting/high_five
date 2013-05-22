@@ -14,7 +14,8 @@ module HighFive
       :compass_dir,
       :js_settings, #serialized out to HighFive.Settings in index.html
       :is_environment, #boolean for if this config is an environment platform
-      :dev_index #copy generated index.html to here on build for use in development
+      :dev_index, #copy generated index.html to here on build for use in development
+      :minify #defaults to true in production mode and false otherwise, overridable
 
 
     def self.configure(&block) 
@@ -53,6 +54,7 @@ module HighFive
         new_config.asset_paths += self.asset_paths
         new_config.compass_dir ||= self.compass_dir
         new_config.dev_index ||= self.dev_index
+        new_config.minify ||= self.minify
         new_config.js_settings.merge! self.js_settings do |key, new_setting, old_setting| 
           new_setting || old_setting #don't clobber settings from the parent
         end
@@ -79,6 +81,7 @@ module HighFive
         self.dev_index = config.dev_index
         self.page_title = config.page_title
         self.meta = config.meta
+        self.minify = config.minify
       else
         @static_assets = []
         @static_javascripts = []
@@ -119,7 +122,11 @@ module HighFive
 
     def environment(name, &block)
       platform(name, &block)
-      @platform_configs[name.to_s].is_environment = true
+      platform_config = @platform_configs[name.to_s]
+      platform_config.is_environment = true
+      if (name.to_s == 'production')
+        platform_config.minify = :uglifier if platform_config.minify.nil?
+      end
     end
 
     def setting(hash)

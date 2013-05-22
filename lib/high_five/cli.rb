@@ -11,7 +11,6 @@ module HighFive
     include HighFive::DeployTask
     include HighFive::AndroidTasks
     # source root path for Thor::Actions commands
-    
 
     class_option :version, type: :boolean, desc: "Print version and ext", aliases: "-v"
     def initialize(*args)

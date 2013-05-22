@@ -1,5 +1,7 @@
 require 'sprockets'
 require 'sass'
+require 'uglifier'
+
 module HighFive
   module DeployTask 
 
@@ -26,13 +28,12 @@ module HighFive
           raise "Please set config.destination" if @config.destination.nil?
           self.destination_root = @config.destination
           FileUtils.rm_rf(self.destination_root)
+          FileUtils.mkdir_p(self.destination_root)
 
           #todo add to config
           say "Deploying app: <#{@platform}> <#{options[:environment]}>"
           say "\t#{self.destination_root}"
           say " -Weinre url: #{@weinre_url}" if @weinre_url
-
-
           
           if @config.compass_dir
             compass_dir = File.join(base_config.root, @config.compass_dir)
@@ -65,8 +66,22 @@ module HighFive
           if (@environment == "production")
             appjs = File.join(self.destination_root, "app.js")
             @javascripts = ["app.js"]
-            say "      create  #{appjs}", :green
-            bundle.write_to(appjs)
+            
+            output_js = nil
+            if @config.minify  == :uglifier
+              say "      uglify  #{appjs}", :green
+              output_js = Uglifier.compile(bundle.to_s)
+            elsif @config.minify == :yui
+              say "      minify  #{appjs}", :green
+              output_js = YUI::JavaScriptCompressor.new.compress(bundle.to_s)
+            else
+              say "      create  #{appjs}", :green
+              output_js = bundle.to_s
+            end
+            File.open(appjs, "w") do |file| 
+              file.write output_js
+            end
+            output_js = nil
           else
             # Add each of the javascript files to the generated folder
             @javascripts = []
@@ -121,7 +136,7 @@ module HighFive
           # Build index.html
           say "Generating index.html"
           template File.join(@config_root, "index.html.erb"), File.join(self.destination_root, "index.html")
-          if (@config.dev_index)
+          if (@environment == 'development' && !@config.dev_index.nil?)
             say "Cloning to #{@config.dev_index}"
             FileUtils.cp(File.join(self.destination_root, "index.html"), File.join(@config.root, @config.dev_index))
           end
