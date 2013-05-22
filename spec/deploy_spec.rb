@@ -95,6 +95,7 @@ describe HighFive::DeployTask do
 
     it "should clone index.html to index-debug.html when directed" do 
       index = File.read(File.join(@project_root, "www-web", "index.html"))
+
       index_debug = File.read(File.join(@project_root, "index-debug.html"))
       index.should eq index_debug
     end

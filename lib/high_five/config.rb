@@ -76,6 +76,7 @@ module HighFive
         @js_settings = config.js_settings.dup
         self.root = config.root
         self.destination = config.destination
+        self.dev_index = config.dev_index
         self.page_title = config.page_title
         self.meta = config.meta
       else
@@ -136,7 +137,9 @@ module HighFive
     #easy setters
 
     def dev_index(*args)
-      @dev_index = args[0] if args.length == 1
+      if args.length == 1
+        @dev_index = args[0] 
+      end
       @dev_index 
     end
 

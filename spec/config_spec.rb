@@ -78,4 +78,27 @@ describe HighFive::Config do
     end
   end
 
+  context "easy settings" do
+    before do 
+      HighFive::Config.configure do |config|
+        config.root = "/"
+        config.asset_paths = ["assets"]
+        config.dev_index "default.html"
+        config.platform :web do |web|
+          web.dev_index "index-debug.html"
+        end
+      end
+      @config = HighFive::Config.instance
+    end
+
+    it "should keep track of dev_index" do 
+      @config.dev_index.should eq "default.html"
+    end
+
+    it "should override dev_index on a platform" do 
+      platform_config = @config.build_platform_config('web')
+      platform_config.dev_index.should eq "index-debug.html"
+    end
+  end
+
 end

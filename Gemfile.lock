@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    high_five (0.0.6)
+    high_five (0.0.7)
       compass (~> 0.12.2)
       json
       sprockets (~> 2.9.0)
