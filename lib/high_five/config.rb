@@ -165,5 +165,11 @@ module HighFive
       js
     end
 
+    def windows!
+      ExecJS::Runtimes::JScript.instance_variable_set(:"@encoding", "UTF-8")
+      ExecJS::Runtimes::JScript.instance_variable_set(:"@command", "cscript //E:jscript //Nologo")
+      ExecJS::Runtimes::JScript.instance_variable_set(:"@binary", "cscript //E:jscript //Nologo")
+    end
+
   end
 end

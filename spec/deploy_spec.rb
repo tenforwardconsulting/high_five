@@ -112,7 +112,7 @@ describe HighFive::DeployTask do
            config.manifest = true
         end
         config.environment :production do |prod|
-
+          prod.minify = :yui
         end
         
       end

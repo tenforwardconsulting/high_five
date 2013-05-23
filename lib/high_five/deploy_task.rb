@@ -1,6 +1,7 @@
 require 'sprockets'
 require 'sass'
 require 'uglifier'
+require "yui/compressor"
 
 module HighFive
   module DeployTask 
