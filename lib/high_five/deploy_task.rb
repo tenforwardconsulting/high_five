@@ -137,7 +137,7 @@ module HighFive
             say "     create manifest", :green
             @manifest_cache = @config.static_assets.collect do |path|
               if (File.directory?(path))
-                Dir.glob(path + "/**/*")
+                Dir.glob(path + "/**/*").reject {|x| File.directory?(x) }
               else
                 path
               end
