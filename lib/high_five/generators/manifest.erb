@@ -6,3 +6,7 @@ CACHE:
 <% @manifest_cache.each do |path| -%>
 <%= URI::encode(path) %>
 <% end -%>
+
+# Whitelist ajax requests and any external js/css/etc requests
+NETWORK:
+*
