@@ -1,4 +1,4 @@
-require 'json'
+require 'multi_json'
 module HighFive
   class Config
     attr_accessor :meta,          # config.meta << { http-equiv: "Content-Type" content: "text/html; charset=utf-8" }
@@ -160,7 +160,7 @@ module HighFive
 
     def high_five_javascript
       js = '<script type="text/javascript">'
-      js += "if(typeof(window.HighFive)==='undefined'){window.HighFive={};}window.HighFive.Settings=#{JSON.dump(js_settings)};"
+      js += "if(typeof(window.HighFive)==='undefined'){window.HighFive={};}window.HighFive.Settings=#{MultiJson.dump(js_settings)};"
       js += '</script>'
       js
     end
