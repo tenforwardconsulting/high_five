@@ -26,6 +26,9 @@ module HighFive
           self.source_paths << File.join(base_config.root, @config_root)
           self.source_paths << File.join(base_config.root)
           self.source_paths << File.join(File.dirname(__FILE__), 'generators')
+          @config.asset_paths.each do |asset_path|
+            self.source_paths << asset_path
+          end
 
 
           raise "Please set config.destination" if @config.destination.nil?
@@ -125,11 +128,12 @@ module HighFive
           end
 
           # Adds each of the static assets to the generated folder (sylesheets etc)
-          @config.static_assets.each do |asset|
+          @config.static_assets.each do |path|
+            asset = find_in_source_paths(path)
             if File.directory? asset
-              directory asset
+              directory asset, path
             else
-              copy_file asset
+              copy_file asset, path
             end
           end
 
