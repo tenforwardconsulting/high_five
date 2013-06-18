@@ -1,0 +1,1 @@
+alert("custom_controller.js");

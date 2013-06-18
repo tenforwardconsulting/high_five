@@ -132,4 +132,29 @@ describe HighFive::DeployTask do
     end
   end
 
+  context "Custom Asset paths" do
+    before :all do
+      create_dummy_app!
+      HighFive::Config.configure do |config|
+        config.root = @project_root
+        config.destination = "www"
+        config.asset_paths = ["public/custom_path"]
+        config.platform :custom_asset_paths do |custom_asset_paths|
+        end
+        
+      end
+      cli.deploy("custom_asset_paths")
+    end
+
+    after(:all) { destroy_dummy_app! }
+
+    it "should process files from custom asset paths" do
+      expect(File.join(@project_root, "www", "public/custom_path/custom_app.js")).to exist
+    end
+
+    it "should process a directory from the custom asset paths" do
+      expect(File.join(@project_root, "www", "public/custom_path/custom_app/controllers/custom_controller.js")).to exist
+    end
+  end
+
 end
