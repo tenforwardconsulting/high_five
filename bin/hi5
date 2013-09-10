@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # resolve bin path, ignoring symlinks
 require "pathname"
+require "thor"
+require "thor/runner"
 bin_file = Pathname.new(__FILE__).realpath
 
 # add self to libpath
@@ -14,4 +16,6 @@ rescue LoadError
 end
 require 'high_five/cli'
 
-HighFive::Cli.start
+# HighFive::Cli.start
+$thor_runner = true
+Thor::Runner.start
