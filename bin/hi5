@@ -16,6 +16,6 @@ rescue LoadError
 end
 require 'high_five/cli'
 
-# HighFive::Cli.start
-$thor_runner = true
-Thor::Runner.start
+HighFive::Cli.start
+# $thor_runner = true
+# Thor::Runner.start
