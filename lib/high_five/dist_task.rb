@@ -39,6 +39,7 @@ module HighFive
 
             system("ant -file '#{android_path}/build.xml' release")
             android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
+            @output_file_name ||= android_name + "-release"
             FileUtils.cp("#{android_path}/build/#{android_name}-release.apk", "#{android_path}/build/#{@output_file_name}.apk")
           elsif @platform == "ios"
             raise "Please pass in the code sign identity to build an ios app. -s [sign_identity]" if @sign_identity.nil?
