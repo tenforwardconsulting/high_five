@@ -2,6 +2,7 @@ require 'thor'
 require 'high_five/deploy_task'
 require 'high_five/init_task'
 require 'high_five/dist_task'
+require 'high_five/android_tasks'
 require 'high_five/config'
 
 module HighFive
@@ -9,6 +10,7 @@ module HighFive
     include Thor::Actions
     include HighFive::InitTask
     include HighFive::DeployTask
+    include HighFive::AndroidTasks
     include HighFive::DistTask
     # source root path for Thor::Actions commands
 

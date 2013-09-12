@@ -1,21 +1,19 @@
 #!/usr/bin/env ruby
 # resolve bin path, ignoring symlinks
-require "pathname"
-require "thor"
-require "thor/runner"
+require 'high_five/thor/runner'
 bin_file = Pathname.new(__FILE__).realpath
 
 # add self to libpath
 $:.unshift File.expand_path("../../lib", bin_file)
 
-begin
-  require 'high_five'
-rescue LoadError
-  require 'rubygems'
-  require 'high_five'
-end
-require 'high_five/cli'
+# begin
+#   require 'high_five'
+# rescue LoadError
+#   require 'rubygems'
+#   require 'high_five'
+# end
+# require 'high_five/cli'
 
-HighFive::Cli.start
-# $thor_runner = true
-# Thor::Runner.start
+$thor_runner = true
+$high_five_runner = true
+::HighFive::Thor::Runner.start
