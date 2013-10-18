@@ -35,13 +35,18 @@ HighFive::Config.configure do |config|
     # android.assets "resources/android"
   end
 
+  config.platform :Web do |web|
+    web.manifest = true #generate app cache manifest (production env only)
+    web.dev_index = "index-debug.html" #copy generated index.html to index-debug (development env only)
+  end
+
   # if you need platform-specific javascripts, 
   # simply create app-<platform>.js 
   # these files are managed by sprockets, and are used to determine the javascript include order
 
   # Environment support: production/development/etc
   # Environments work just like platforms
-  config.envrionment :development do |development|
+  config.environment :development do |development|
     # development.javascripts "lib/some-library-debug-all.js"
     # development.setting base_url: "http://dev.example.com:1234/api/"
   end
@@ -49,6 +54,7 @@ HighFive::Config.configure do |config|
   config.environment :production do |production|
     # production.javascripts "lib/some-library-minified.js"
     # production.setting base_url: "http://production.example.com/api/" #these take precedence over the platform overrides
+    # production.minify :uglifier # or :yui
   end
 
 end

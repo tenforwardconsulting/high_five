@@ -108,4 +108,39 @@ describe HighFive::Config do
     end
   end
 
+  context "nested settings" do 
+    before do 
+      HighFive::Config.configure do |config|
+        config.root = "/"
+        config.setting base_url: "http://example.com/api"
+        config.platform :ios do |ios|
+
+        end
+        config.platform :android do |android|
+          android.assets "android_asset"
+          android.setting android_flag: true
+          config.environment :production do |android_production|
+            android_production.setting base_url: "http://android-production.example.com/api"
+          end
+        end
+        config.environment :production do |production|
+          production.assets "production_asset"
+          production.setting base_url: "http://production.example.com/api"
+        end
+      end
+      @config = HighFive::Config.instance
+    end
+
+    it "should use the environment setting if none is specified" do 
+      platform_config = @config.build_platform_config('ios').build_platform_config('production')
+      platform_config.js_settings[:base_url].should eq "http://production.example.com/api"
+    end
+
+    it "should allow platforms to specifically override environment settings" do 
+      platform_config = @config.build_platform_config('android').build_platform_config('production')
+      platform_config.js_settings[:base_url].should eq "http://android-production.example.com/api"
+    end
+
+  end
+
 end
