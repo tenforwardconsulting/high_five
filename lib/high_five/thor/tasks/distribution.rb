@@ -69,8 +69,6 @@ module HighFive
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
             ENV['uuid'] = uuid
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
-            system("security default-keychain -s #{keychain}")
-            system("security unlock-keychain -p 1qasdfy909 #{keychain}")
             system("cd '#{ios_path}';
               /usr/bin/xcodebuild -target '#{ios_project_name}' -configuration Release build 'CONFIGURATION_BUILD_DIR=#{ios_path}/build' 'CODE_SIGN_IDENTITY=#{@sign_identity}' PROVISIONING_PROFILE=$uuid")
             system("/usr/bin/xcrun -sdk iphoneos PackageApplication -v '#{ios_path}/build/#{ios_project_name}.app' -o '#{ios_path}/build/#{@output_file_name}.ipa' --embed '#{@provisioning_profile}' --sign '#{@sign_identity}'")
