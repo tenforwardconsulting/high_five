@@ -3,11 +3,11 @@ require 'high_five/android_helper'
 module HighFive
   module Thor
     module Tasks
-      class Android < ::HighFive::Thor::Task
-        desc "android_debug", "build the debug apk via ant debug"
-        def android_debug
+      class AndroidTasks < ::HighFive::Thor::Task
+        desc "debug", "build the debug apk via ant debug"
+        def debug(target)
           @destination_root = base_config.root
-          puts "Debugy"
+          puts "Debugy #{target}"
         end
 
         desc "build", "build the apk"

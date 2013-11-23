@@ -1,5 +1,3 @@
-require 'high_five/thor/task'
-
 module HighFive
   module Thor
     module Tasks

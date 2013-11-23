@@ -1,9 +1,14 @@
 require "thor/runner"
 require 'high_five/thor/task'
+require 'high_five/thor/tasks'
 
 module HighFive
   module Thor
     class Runner < ::Thor::Runner
+
+      #this works but I hate it
+      require 'high_five/thor/tasks/distribution'
+      register(HighFive::Thor::Tasks::Distribution, "dist", "dist [COMMAND]", "Shortcut to dist_task:dist")
 
       # Note: because of the way task.run works, there has to be a local
       # definition. Also, we want tasks to work WITH our base namespace
@@ -27,7 +32,7 @@ module HighFive
 
       private
       def thorfiles(*args)
-        Dir[File.join(File.dirname(__FILE__), 'tasks/**/*.rb')]
+        Dir[File.join(File.dirname(__FILE__), 'tasks/*.rb')]
       end
 
     end

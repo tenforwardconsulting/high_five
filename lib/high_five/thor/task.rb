@@ -3,6 +3,14 @@ require 'high_five/config'
 module HighFive
   module Thor
     class Task < ::Thor
+      def self.banner(task, namespace = false, subcommand = true)
+         "hi5 " + task.formatted_usage(self, namespace, subcommand)
+      end
+
+      def self.root_task(name, command)
+        # p self.name
+        register(self, name+"2", command, "Shortcut to #{name}")
+      end
 
       no_tasks {
         def invoke(name=nil, *args)
