@@ -7,8 +7,8 @@ module HighFive
     class Runner < ::Thor::Runner
 
       #this works but I hate it
-      require 'high_five/thor/tasks/distribution'
-      register(HighFive::Thor::Tasks::Distribution, "dist", "dist [COMMAND]", "Shortcut to dist_task:dist")
+      register(HighFive::Thor::Tasks::Distribution, "dist", "dist [PLATFORM]", "Shortcut to distribution:dist")
+      register(HighFive::Thor::Tasks::Deploy, "deploy", "deploy [PLATFORM]", "Shortcut to deploy:deploy")
 
       # Note: because of the way task.run works, there has to be a local
       # definition. Also, we want tasks to work WITH our base namespace

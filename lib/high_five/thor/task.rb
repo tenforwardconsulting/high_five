@@ -7,11 +7,6 @@ module HighFive
          "hi5 " + task.formatted_usage(self, namespace, subcommand)
       end
 
-      def self.root_task(name, command)
-        # p self.name
-        register(self, name+"2", command, "Shortcut to #{name}")
-      end
-
       no_tasks {
         def invoke(name=nil, *args)
           name.sub!(/^high_five:/, '') if name && $high_five_runner
@@ -33,6 +28,11 @@ module HighFive
           end
         end
       }
+
+      def initialize(*args)
+        super
+       
+      end
     
       module ClassMethods
         def namespace(name=nil)

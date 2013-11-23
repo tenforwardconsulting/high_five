@@ -1,12 +1,10 @@
+require 'high_five/thor/tasks/deploy'
+require 'high_five/thor/tasks/distribution'
+require 'high_five/thor/tasks/init_task'
+require 'high_five/thor/tasks/android_tasks'
 module HighFive
   module Thor
-    module Tasks
-      def self.load
-        Dir.glob(File.join(File.dirname(__FILE__), 'tasks', '**/*.rb')) do |file|
-          ::Thor::Util.load_thorfile(file) if File.file?(file)
-        end
-      end
+    module Tasks   
     end
   end
 end
-HighFive::Thor::Tasks.load

@@ -4,10 +4,11 @@ require 'uglifier'
 require "yui/compressor"
 
 module HighFive
-  module DeployTask 
-
-    def self.included(mod) 
-      mod.class_eval do 
+  module Thor
+    module Tasks
+      class Deploy < ::HighFive::Thor::Task
+        default_task :deploy
+        include ::Thor::Actions
 
         desc "deploy", "Deploy the app for a specific platform in a specific environment"
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
