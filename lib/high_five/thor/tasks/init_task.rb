@@ -2,9 +2,10 @@ require 'fileutils'
 module HighFive
   module Thor
     module Tasks
-      class InitTask < ::HighFive::Thor::Task
-        namespace :high_five
-        
+      class Initialization < ::HighFive::Thor::Task
+        default_task :init
+        include ::Thor::Actions
+
         desc "init", "Initialize the high_five configuration in the current working directory"
         def init
           self.destination_root = Dir.pwd

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe HighFive::DeployTask do 
+describe HighFive::Thor::Tasks::Deploy do 
   def create_dummy_app!
     @original_dir = Dir.pwd
     @project_root = Dir.mktmpdir("hi5")
@@ -9,7 +9,7 @@ describe HighFive::DeployTask do
   end
 
   def cli(options={environment: 'development'})
-    cli = HighFive::Cli.new([], options)
+    cli = HighFive::Thor::Tasks::Deploy.new([], options)
     cli.instance_variable_set("@base_config", HighFive::Config.instance)
     cli
   end

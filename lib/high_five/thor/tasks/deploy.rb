@@ -26,7 +26,7 @@ module HighFive
           
           self.source_paths << File.join(base_config.root, @config_root)
           self.source_paths << File.join(base_config.root)
-          self.source_paths << File.join(File.dirname(__FILE__), 'generators')
+          self.source_paths << File.join(File.dirname(__FILE__), '..', '..', 'generators')
           @config.asset_paths.each do |asset_path|
             self.source_paths << asset_path
           end

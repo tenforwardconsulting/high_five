@@ -27,6 +27,13 @@ describe HighFive::Config do
         config.environment :production do |production|
           production.setting base_url: "http://production.example.com/api"
         end
+
+        config.platform :android do |android|
+          android.setting base_url: "http://android.example.com"
+          android.environment :production do |android_production|
+            android_production.setting base_url: "http://android-production.example.com"
+          end
+        end
       end
       @config = HighFive::Config.instance
     end
@@ -38,6 +45,11 @@ describe HighFive::Config do
     example "platform settings should take precedence" do 
       prod = @config.build_platform_config :production
       prod.js_settings[:base_url].should eq "http://production.example.com/api"
+    end
+
+    it "should handle nested settings properly" do 
+      android_production = @config.build_platform_config(:platform).build_platform_config(:android)
+      android_production.js_settings[:base_url].should eq "http://android-production.example.com"
     end
 
   end
