@@ -4,7 +4,12 @@ module HighFive
   module Thor
     class Task < ::Thor
       def self.banner(task, namespace = false, subcommand = true)
-         "hi5 " + task.formatted_usage(self, namespace, subcommand)
+        if self.namespace == "high_five"
+          ns = ""
+        else
+          ns = "#{self.namespace}:"
+        end
+        "hi5 #{ns}" + task.formatted_usage(self, namespace, subcommand)
       end
 
       no_tasks {

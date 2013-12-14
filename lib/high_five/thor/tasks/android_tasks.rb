@@ -4,6 +4,9 @@ module HighFive
   module Thor
     module Tasks
       class AndroidTasks < ::HighFive::Thor::Task
+        include ::Thor::Actions
+        namespace :android
+
         desc "debug", "build the debug apk via ant debug"
         def debug(target)
           @destination_root = base_config.root

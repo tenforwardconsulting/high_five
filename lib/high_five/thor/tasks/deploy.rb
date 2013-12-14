@@ -7,8 +7,8 @@ module HighFive
   module Thor
     module Tasks
       class Deploy < ::HighFive::Thor::Task
-        default_task :deploy
         include ::Thor::Actions
+        default_task :deploy
 
         desc "deploy", "Deploy the app for a specific platform in a specific environment"
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"

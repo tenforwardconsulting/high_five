@@ -3,8 +3,8 @@ module HighFive
   module Thor
     module Tasks
       class Initialization < ::HighFive::Thor::Task
-        default_task :init
         include ::Thor::Actions
+        default_task :init
 
         desc "init", "Initialize the high_five configuration in the current working directory"
         def init
