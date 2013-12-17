@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "yui-compressor", "~>0.9.6"
   s.add_runtime_dependency "uglifier", "~>2.1.1"
   s.add_runtime_dependency "sprockets", ">=2.0"
+  s.add_runtime_dependency "coffee-script", "~>2.2.0"
   s.add_runtime_dependency "plist", ">=3.0"
   s.add_development_dependency "rspec", "~>2.13.0"
 

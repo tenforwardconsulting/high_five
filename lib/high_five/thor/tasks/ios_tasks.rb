@@ -6,13 +6,14 @@ module HighFive
     module Tasks
       class IosTasks < ::HighFive::Thor::Task
         include ::Thor::Actions
+        include ::HighFive::IosHelper
         namespace :ios
 
         desc "set_version", "build the debug apk via ant debug"
         method_option :version, :aliases => "-v", :desc => "Set main version"
         method_option :build_number, :aliases => '-b', :desc => "set build number"
         def set_version
-          info = ::HighFive::IosHelper.info_plist_path(base_config.build_platform_config(:ios))
+          info = info_plist_path
           puts "Using #{info}"
           plist = Plist::parse_xml(info)
 
@@ -33,8 +34,7 @@ module HighFive
 
         desc "build", "build the apk"
         def build
-          run('ant -file build.xml "-Dkey.store=/Users/Shared/Jenkins/Home/jobs/modern resident/workspace/modern_resident-mobile/android/Keystore.ks" -Dkey.store.password=modernresident -Dkey.alias=android -Dkey.alias.password=modernresident clean release
-            Buildfile: /Users/Shared/Jenkins/Home/jobs/modern resident/workspace/modern_resident-mobile/android/build.xml')
+         
         end
       end
     end

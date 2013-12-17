@@ -4,8 +4,10 @@ module HighFive
   module Thor
     module Tasks
       class Distribution < ::HighFive::Thor::Task
-        default_task :dist
         include ::Thor::Actions
+        include IosHelper
+
+        default_task :dist
 
         desc "dist [PLATFORM]", "Create a distribution package for a specific platform"
         method_option :output_file_name, :aliases => "-o", :desc => "Name of the final output file. Defaults to project_name.apk/ipa"
@@ -47,16 +49,9 @@ module HighFive
             raise "Please pass in the code sign identity to build an ios app. -s [sign_identity]" if @sign_identity.nil?
             raise "Please pass in the path to the provisioning profile to build an ios app. -p [provisioning_profile]" if @provisioning_profile.nil?
 
-            path = self.destination_root
-            while path != base_config.root
-              if !Dir[path + "/*.xcodeproj"].empty?
-                ios_path = path
-                break
-              else
-                path = File.expand_path('..', path)
-              end
-            end
-
+            p self.class.ancestors
+            ios_path = File.dirname(xcodeproj_path())
+            
             if !ios_path
               raise "Couldn't find the path of the xcodeproj."
             end

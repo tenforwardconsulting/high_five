@@ -1,4 +1,7 @@
 HighFive::Config.configure do |config|
+  config.app_name = "ExampleApp"
+  config.app_id = "com.example.app"
+  
   config.root = File.join(File.dirname(__FILE__), '..')
   config.destination = "www"
 

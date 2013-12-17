@@ -35,8 +35,9 @@ module HighFive
                    :compass_dir,  # directory that contaings compass' config.rb
                    :dev_index,    # copy generated index.html to here on build for use in development
                    :minify,       # defaults to true in production mode and false otherwise, overridable
-                   :manifest      # generate html5 manifest
-
+                   :manifest,     # generate html5 manifest
+                   :app_name,     # App Name
+                   :app_id        # App id (com.tenforwardconsulting.myapp)
 
     def self.configure(&block) 
       @@instance = HighFive::Config.new
