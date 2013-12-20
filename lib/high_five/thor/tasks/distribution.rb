@@ -49,7 +49,6 @@ module HighFive
             raise "Please pass in the code sign identity to build an ios app. -s [sign_identity]" if @sign_identity.nil?
             raise "Please pass in the path to the provisioning profile to build an ios app. -p [provisioning_profile]" if @provisioning_profile.nil?
 
-            p self.class.ancestors
             ios_path = File.dirname(xcodeproj_path())
             
             if !ios_path
@@ -64,9 +63,9 @@ module HighFive
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
             ENV['uuid'] = uuid
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
-            system("cd '#{ios_path}';
-              /usr/bin/xcodebuild -target '#{ios_project_name}' -configuration Release build 'CONFIGURATION_BUILD_DIR=#{ios_path}/build' 'CODE_SIGN_IDENTITY=#{@sign_identity}' PROVISIONING_PROFILE=$uuid")
-            system("/usr/bin/xcrun -sdk iphoneos PackageApplication -v '#{ios_path}/build/#{ios_project_name}.app' -o '#{ios_path}/build/#{@output_file_name}.ipa' --embed '#{@provisioning_profile}' --sign '#{@sign_identity}'")
+            system(%Q(cd "#{ios_path}";
+              /usr/bin/xcodebuild -target "#{ios_project_name}" -configuration Release build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
+            system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_project_name}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
           end
         end
       end
