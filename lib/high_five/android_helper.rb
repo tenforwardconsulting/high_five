@@ -8,5 +8,17 @@ module HighFive
       end
       nil
     end
+
+    def android_manifest_path
+      platform_config = base_config.build_platform_config(:android)
+      destination_dir = platform_config.destination
+      root_dir = destination_dir
+      while true
+        glob = Dir[File.join(root_dir, "AndroidManifest.xml")]
+        return glob.first if (glob.length > 0)
+        root_dir = File.expand_path("..", root_dir)
+        raise "Couldn't find android manifest near #{destination_dir}" if root_dir == '/'
+      end
+    end
   end
 end
