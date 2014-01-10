@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email       = ["brian@tenforwardconsulting.com"]
   s.homepage    = "http://github.com/tenforwardconsulting/high_five"
   s.summary     = %q{HighFive is a set of build scripts and tools for packing HTML5 apps both for the web and for phonegap}
-  s.description = %q{Build, minify, and deal with different platforms and environments for your HTML5 app.  
+  s.description = %q{Build, minify, and deal with different platforms and environments for your HTML5 app.
     This is often used with PhoneGap but designed not to require it, and high_five can be used to deploy any kind of HTML/JS/CSS-based
     application that requires different deployment configurations.
   }
@@ -21,6 +21,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "yui-compressor", "~>0.9.6"
   s.add_runtime_dependency "uglifier", "~>2.1.1"
   s.add_runtime_dependency "sprockets", ">=2.0"
+  s.add_runtime_dependency "coffee-script", "~>2.2.0"
+  s.add_runtime_dependency "plist", ">=3.0"
+  s.add_runtime_dependency "nokogiri", ">=1.5.0"
   s.add_development_dependency "rspec", "~>2.13.0"
 
 

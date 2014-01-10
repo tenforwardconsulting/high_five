@@ -4,10 +4,11 @@ require 'uglifier'
 require "yui/compressor"
 
 module HighFive
-  module DeployTask 
-
-    def self.included(mod) 
-      mod.class_eval do 
+  module Thor
+    module Tasks
+      class Deploy < ::HighFive::Thor::Task
+        include ::Thor::Actions
+        default_task :deploy
 
         desc "deploy", "Deploy the app for a specific platform in a specific environment"
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
@@ -25,7 +26,7 @@ module HighFive
           
           self.source_paths << File.join(base_config.root, @config_root)
           self.source_paths << File.join(base_config.root)
-          self.source_paths << File.join(File.dirname(__FILE__), 'generators')
+          self.source_paths << File.join(File.dirname(__FILE__), '..', '..', 'generators')
           @config.asset_paths.each do |asset_path|
             self.source_paths << asset_path
           end

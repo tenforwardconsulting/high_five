@@ -1,8 +1,10 @@
 require 'fileutils'
 module HighFive
-  module InitTask
-    def self.included(mod) 
-      mod.class_eval do
+  module Thor
+    module Tasks
+      class Initialization < ::HighFive::Thor::Task
+        include ::Thor::Actions
+        default_task :init
 
         desc "init", "Initialize the high_five configuration in the current working directory"
         def init
@@ -23,9 +25,7 @@ module HighFive
             end
           end
         end
-
-
-      end #end class_eval
+      end 
     end
   end
 end
