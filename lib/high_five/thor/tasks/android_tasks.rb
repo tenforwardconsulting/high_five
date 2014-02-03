@@ -50,7 +50,7 @@ module HighFive
           end
         end
 
-        desc "set_icon", "Generate app icons and put them in correct spot"
+        desc "set_icon", "Generate app icons from base png image"
         def set_icon(path)
           res_map ={
             ldpi: 36,
