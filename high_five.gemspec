@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "coffee-script", "~>2.2.0"
   s.add_runtime_dependency "plist", ">=3.0"
   s.add_runtime_dependency "nokogiri", ">=1.5.0"
+  s.add_runtime_dependency "chunky_png"
   s.add_development_dependency "rspec", "~>2.13.0"
 
 
