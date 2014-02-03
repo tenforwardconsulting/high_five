@@ -40,7 +40,7 @@ describe HighFive::Thor::Tasks::AndroidTasks do
     end
 
     it 'resizes to correct dimensions' do
-      res_map ={
+      res_map = {
         ldpi: 36,
         mdpi: 48,
         hdpi: 72,

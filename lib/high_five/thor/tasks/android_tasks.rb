@@ -62,13 +62,14 @@ module HighFive
           image = ChunkyPNG::Image.from_file(path)
 
           manifest = File.read(android_manifest_path)
-          icon_name = manifest.match(/android:icon="@drawable\/(.*)"/)[1] + '.png'
+          icon_name = manifest.match(/android:icon="@drawable\/(.*?)"/)[1] + '.png'
 
-          drawable_dir = File.join base_config.root, 'android', 'res'
+          drawable_dir = File.join File.dirname(android_manifest_path), 'res'
           Dir.glob(File.join(drawable_dir, "drawable*")) do |dir|
             res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
             size = res_map[res]
             image.resize(size, size).save(File.join(dir, icon_name))
+            puts "Writing #{size}x#{size} -> #{File.join(dir, icon_name)}"
           end
         end
       end
