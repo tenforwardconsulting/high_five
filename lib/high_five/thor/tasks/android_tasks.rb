@@ -1,6 +1,5 @@
-require 'high_five/android_helper'
 require 'chunky_png'
-require 'pry'
+require 'high_five/android_helper'
 require 'nokogiri'
 
 module HighFive
