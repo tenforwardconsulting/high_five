@@ -13,7 +13,7 @@ describe HighFive::Thor::Tasks::Deploy do
 
         end
       end
-      cli.deploy("android")
+      cli(HighFive::Thor::Tasks::Deploy).deploy("android")
     end
 
     after(:all) { destroy_dummy_app! }
@@ -41,7 +41,7 @@ describe HighFive::Thor::Tasks::Deploy do
 
         end
       end
-      cli.deploy("android")
+      cli(HighFive::Thor::Tasks::Deploy).deploy("android")
     end
 
     after(:all) { destroy_dummy_app! }
@@ -69,7 +69,7 @@ describe HighFive::Thor::Tasks::Deploy do
           config.dev_index "index-debug.html"
         end
       end
-      cli.deploy("web")
+      cli(HighFive::Thor::Tasks::Deploy).deploy("web")
     end
 
     after(:all) { destroy_dummy_app! }
@@ -98,7 +98,7 @@ describe HighFive::Thor::Tasks::Deploy do
         end
 
       end
-      cli(environment: 'production').deploy("web")
+      cli(HighFive::Thor::Tasks::Deploy, environment: 'production').deploy("web")
     end
 
     after(:all) { destroy_dummy_app! }
@@ -125,7 +125,7 @@ describe HighFive::Thor::Tasks::Deploy do
         end
 
       end
-      cli.deploy("custom_asset_paths")
+      cli(HighFive::Thor::Tasks::Deploy).deploy("custom_asset_paths")
     end
 
     after(:all) { destroy_dummy_app! }

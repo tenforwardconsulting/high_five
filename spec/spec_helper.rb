@@ -34,8 +34,8 @@ module HighFive::TestHelper
     FileUtils.cp_r(Dir[File.join(File.dirname(__FILE__), "dummy", "*")], @project_root)
   end
 
-  def cli(options={environment: 'development'})
-    cli = HighFive::Thor::Tasks::Deploy.new([], options)
+  def cli(task_class, options={environment: 'development'})
+    cli = task_class.new([], options)
     cli.instance_variable_set("@base_config", HighFive::Config.instance)
     cli
   end
