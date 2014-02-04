@@ -20,5 +20,31 @@ module HighFive
         raise "Couldn't find android manifest near #{destination_dir}" if root_dir == '/'
       end
     end
+
+    def res_map
+      {
+        ldpi: 36,
+        mdpi: 48,
+        hdpi: 72,
+        xhdpi: 96,
+        drawable: 512
+      }
+    end
+
+    def parse_resolution(dir)
+      dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
+    end
+
+    # drawable_dir: The directory containing drawable/, drawable-hdpi, drawable-mdpi, etc
+    # Returns directories which are present & whose resolutions are supported
+    def valid_directories(drawable_dir)
+      valid_dirs = []
+      Dir.glob(File.join drawable_dir, "drawable*") do |dir|
+        res = parse_resolution(dir)
+        size = res_map[res]
+        valid_dirs << dir unless size.nil?
+      end
+      valid_dirs
+    end
   end
 end

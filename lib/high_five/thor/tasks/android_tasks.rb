@@ -1,3 +1,4 @@
+require 'chunky_png'
 require 'high_five/android_helper'
 require 'nokogiri'
 
@@ -21,7 +22,7 @@ module HighFive
             Buildfile: /Users/Shared/Jenkins/Home/jobs/modern resident/workspace/modern_resident-mobile/android/build.xml')
         end
 
-        desc "set_version", "build the debug apk via ant debug"
+        desc "set_version", "Change the version and build number"
         method_option :version, :aliases => "-v", :desc => "Set main version"
         method_option :build_number, :aliases => '-b', :desc => "set build number"
         def set_version
@@ -46,6 +47,22 @@ module HighFive
           # save the output into a new file
           File.open(android_manifest_path, "w") do |f|
             f.write xml.to_xml
+          end
+        end
+
+        desc "set_icon", "Generate app icons from base png image"
+        def set_icon(path)
+          image = ChunkyPNG::Image.from_file(path)
+
+          manifest = File.read(android_manifest_path)
+          icon_name = manifest.match(/android:icon="@drawable\/(.*?)"/)[1] + '.png'
+
+          drawable_dir = File.join File.dirname(android_manifest_path), 'res'
+          valid_directories(drawable_dir).each do |dir|
+            res = parse_resolution(dir)
+            size = res_map[res]
+            image.resize(size, size).save(File.join(dir, icon_name))
+            puts "Writing #{size}x#{size} -> #{File.join(dir, icon_name)}"
           end
         end
       end
