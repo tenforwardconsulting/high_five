@@ -3,6 +3,7 @@ require 'chunky_png'
 
 describe HighFive::Thor::Tasks::AndroidTasks do
   include HighFive::TestHelper
+  include HighFive::AndroidHelper
 
   before(:all) do
     create_dummy_app!
@@ -29,6 +30,10 @@ describe HighFive::Thor::Tasks::AndroidTasks do
 
     it 'creates icons for each drawable- folder' do
       Dir.glob(File.join(drawable_dir, "drawable-*")) do |dir|
+        res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
+        size = res_map[res]
+        next if size.nil?
+
         file = File.join(dir, 'icon.png')
         expect(file).to exist
       end
@@ -40,18 +45,13 @@ describe HighFive::Thor::Tasks::AndroidTasks do
     end
 
     it 'resizes to correct dimensions' do
-      res_map = {
-        ldpi: 36,
-        mdpi: 48,
-        hdpi: 72,
-        xhdpi: 96,
-        default: 512
-      }
       Dir.glob(File.join(drawable_dir, "drawable-*")) do |dir|
-        file = File.join(dir, 'icon.png')
-        image = ChunkyPNG::Image.from_file(file)
         res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
         size = res_map[res]
+        next if size.nil?
+
+        file = File.join(dir, 'icon.png')
+        image = ChunkyPNG::Image.from_file(file)
         expect(image.dimension.height).to eq size
         expect(image.dimension.width).to eq size
       end

@@ -52,13 +52,6 @@ module HighFive
 
         desc "set_icon", "Generate app icons from base png image"
         def set_icon(path)
-          res_map ={
-            ldpi: 36,
-            mdpi: 48,
-            hdpi: 72,
-            xhdpi: 96,
-            drawable: 512
-          }
           image = ChunkyPNG::Image.from_file(path)
 
           manifest = File.read(android_manifest_path)
@@ -68,6 +61,8 @@ module HighFive
           Dir.glob(File.join(drawable_dir, "drawable*")) do |dir|
             res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
             size = res_map[res]
+            next if size.nil?
+
             image.resize(size, size).save(File.join(dir, icon_name))
             puts "Writing #{size}x#{size} -> #{File.join(dir, icon_name)}"
           end

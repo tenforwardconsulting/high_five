@@ -9,6 +9,16 @@ module HighFive
       nil
     end
 
+    def res_map
+      {
+        ldpi: 36,
+        mdpi: 48,
+        hdpi: 72,
+        xhdpi: 96,
+        drawable: 512
+      }
+    end
+
     def android_manifest_path
       platform_config = base_config.build_platform_config(:android)
       destination_dir = platform_config.destination
