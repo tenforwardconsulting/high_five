@@ -6,6 +6,7 @@ module HighFive
       class Distribution < ::HighFive::Thor::Task
         include ::Thor::Actions
         include IosHelper
+        include AndroidHelper
 
         default_task :dist
 
@@ -25,20 +26,10 @@ module HighFive
           self.destination_root = @config.destination
 
           if @platform == "android" || @platform == "amazon"
-            path = self.destination_root
-            while path != base_config.root
-              if File.exists? File.join(path, 'AndroidManifest.xml')
-                android_path = path
-                break
-              else
-                path = File.expand_path('..', path)
-              end
-            end
+            manifest_path = android_manifest_path
+            android_path = File.dirname(manifest_path)
 
-            if !android_path
-              raise "Couldn't find the path of the android manifest."
-            end
-
+            system("android update project --path #{android_path} --subprojects")
             system("ant -file '#{android_path}/build.xml' release")
 
             android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
@@ -50,7 +41,7 @@ module HighFive
             raise "Please pass in the path to the provisioning profile to build an ios app. -p [provisioning_profile]" if @provisioning_profile.nil?
 
             ios_path = File.dirname(xcodeproj_path())
-            
+
             if !ios_path
               raise "Couldn't find the path of the xcodeproj."
             end
