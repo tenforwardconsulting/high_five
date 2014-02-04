@@ -25,3 +25,25 @@ RSpec::Matchers.define :exist do
     File.exists?(actual)
   end
 end
+
+module HighFive::TestHelper
+  def create_dummy_app!
+    @original_dir = Dir.pwd
+    @project_root = Dir.mktmpdir("hi5")
+    Dir.chdir @project_root
+    FileUtils.cp_r(Dir[File.join(File.dirname(__FILE__), "dummy", "*")], @project_root)
+  end
+
+  def cli(task_class, options={environment: 'development'})
+    cli = task_class.new([], options)
+    cli.instance_variable_set("@base_config", HighFive::Config.instance)
+    cli
+  end
+
+  def destroy_dummy_app!
+    puts "Cleaning up deploy directory.  Contents: "
+    system("find #{@project_root} -print | sed 's;[^/]*/;|___;g;s;___|; |;g'")
+    Dir.chdir @original_dir
+    FileUtils.rm_rf @project_root
+  end
+end
