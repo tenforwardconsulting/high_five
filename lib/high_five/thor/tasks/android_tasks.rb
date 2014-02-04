@@ -58,11 +58,9 @@ module HighFive
           icon_name = manifest.match(/android:icon="@drawable\/(.*?)"/)[1] + '.png'
 
           drawable_dir = File.join File.dirname(android_manifest_path), 'res'
-          Dir.glob(File.join(drawable_dir, "drawable*")) do |dir|
-            res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
+          valid_directories(drawable_dir).each do |dir|
+            res = parse_resolution(dir)
             size = res_map[res]
-            next if size.nil?
-
             image.resize(size, size).save(File.join(dir, icon_name))
             puts "Writing #{size}x#{size} -> #{File.join(dir, icon_name)}"
           end

@@ -29,11 +29,7 @@ describe HighFive::Thor::Tasks::AndroidTasks do
     end
 
     it 'creates icons for each drawable- folder' do
-      Dir.glob(File.join(drawable_dir, "drawable-*")) do |dir|
-        res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
-        size = res_map[res]
-        next if size.nil?
-
+      valid_directories(drawable_dir).each do |dir|
         file = File.join(dir, 'icon.png')
         expect(file).to exist
       end
@@ -45,11 +41,9 @@ describe HighFive::Thor::Tasks::AndroidTasks do
     end
 
     it 'resizes to correct dimensions' do
-      Dir.glob(File.join(drawable_dir, "drawable-*")) do |dir|
-        res = dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
+      valid_directories(drawable_dir).each do |dir|
+        res = parse_resolution(dir)
         size = res_map[res]
-        next if size.nil?
-
         file = File.join(dir, 'icon.png')
         image = ChunkyPNG::Image.from_file(file)
         expect(image.dimension.height).to eq size
@@ -64,7 +58,7 @@ describe HighFive::Thor::Tasks::AndroidTasks do
       cli.instance_variable_set("@base_config", HighFive::Config.instance)
       cli.set_version
       manifest = File.read(File.join(@project_root, 'android', 'AndroidManifest.xml'))
-      expect(manifest).to match /android:versionName="2.0"/
+      expect(manifest).to match(/android:versionName="2.0"/)
     end
   end
 end
