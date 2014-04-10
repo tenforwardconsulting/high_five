@@ -14,6 +14,7 @@ module HighFive
         method_option :output_file_name, :aliases => "-o", :desc => "Name of the final output file. Defaults to project_name.apk/ipa"
         method_option :sign_identity, :aliases => "-s", :desc => "Full name of the code sign identity for use by xcode"
         method_option :provisioning_profile, :aliases => "-p", :desc => "Path to the provisioning profile"
+        method_option :target, :desc => "iOS target to build"
         def dist(platform)
           @output_file_name       = options[:output_file_name]
           @sign_identity          = options[:sign_identity]
@@ -41,18 +42,20 @@ module HighFive
             end
 
             ios_project_name = File.basename(Dir[ios_path + "/*.xcodeproj"].first, '.xcodeproj')
+            ios_target = options[:target] || ios_project_name
             keychain = ios_project_name.gsub(/\s/, '').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').tr("-", "_").downcase + '-ios.keychain'
 
-            @output_file_name ||= ios_project_name
+            @output_file_name ||= ios_target
 
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
             ENV['uuid'] = uuid
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
             system(%Q(cd "#{ios_path}";
-              /usr/bin/xcodebuild -target "#{ios_project_name}" -configuration Release build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
-            system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_project_name}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
+              /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
+            system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
           end
         end
+
         desc "dist_android [ANDROID_PATH]", "Create a distribution package for android"
         method_option :output_file_name, :aliases => "-o", :desc => "Name of the final output file. Defaults to project_name.apk/ipa"
         def dist_android(android_path)
