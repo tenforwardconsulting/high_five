@@ -12,9 +12,10 @@ module HighFive
       nil
     end
 
-    def info_plist_path
+    def info_plist_path(target=nil)
       root_dir = File.dirname(xcodeproj_path)
-      info =  Dir["#{root_dir}/**/*-Info.plist"].first
+      target = "*" if target.nil?
+      info =  Dir["#{root_dir}/**/#{target}-Info.plist"].first
       raise "Couldn't find infoplist" if info.nil?
       return info
     end
