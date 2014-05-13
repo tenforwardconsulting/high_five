@@ -15,6 +15,7 @@ module HighFive
         method_option :sign_identity, :aliases => "-s", :desc => "Full name of the code sign identity for use by xcode"
         method_option :provisioning_profile, :aliases => "-p", :desc => "Path to the provisioning profile"
         method_option :target, :desc => "iOS target to build"
+        method_option :install, :aliases => "-i", type: :boolean, :desc => "Install on device after building"
         def dist(platform)
           @output_file_name       = options[:output_file_name]
           @sign_identity          = options[:sign_identity]
@@ -31,6 +32,9 @@ module HighFive
             android_path = File.dirname(manifest_path)
 
             dist_android(android_path)
+            if options[:install]
+              install_android android_path
+            end
           elsif @platform == "ios"
             raise "Please pass in the code sign identity to build an ios app. -s [sign_identity]" if @sign_identity.nil?
             raise "Please pass in the path to the provisioning profile to build an ios app. -p [provisioning_profile]" if @provisioning_profile.nil?
@@ -67,6 +71,11 @@ module HighFive
           if @output_file_name
             FileUtils.cp("#{android_path}/bin/#{android_name}-release.apk", "#{android_path}/bin/#{@output_file_name}.apk")
           end
+        end
+
+        desc "install_android [ANDROID_PATH]", "Install the distribution package on the connected android device or emulator"
+        def install_android(android_path)
+          system("ant -file '#{android_path}/build.xml' installr")
         end
       end
     end
