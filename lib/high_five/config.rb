@@ -13,7 +13,7 @@ module HighFive
 
 
     # shorthand for me to define lots and lots of config settings that need to be handled
-    # as attr_accessible, settable via setting(blah) instead of settings=blah, and also 
+    # as attr_accessible, settable via setting(blah) instead of settings=blah, and also
     # persisted to derived platform configs
     def self.config_setting(*settings)
       config_variables = []
@@ -29,7 +29,7 @@ module HighFive
       @@config_variables = config_variables
     end
 
-    config_setting :root,         # Root of the project 
+    config_setting :root,         # Root of the project
                    :destination,  # generated folder for project('www')
                    :page_title,   # <title>#{page_title}</title>
                    :compass_dir,  # directory that contaings compass' config.rb
@@ -37,9 +37,10 @@ module HighFive
                    :minify,       # defaults to true in production mode and false otherwise, overridable
                    :manifest,     # generate html5 manifest
                    :app_name,     # App Name
-                   :app_id        # App id (com.tenforwardconsulting.myapp)
+                   :app_id,        # App id (com.tenforwardconsulting.myapp)
+                   :android_manifest # Path to the android manifest, relative to the project root
 
-    def self.configure(&block) 
+    def self.configure(&block)
       @@instance = HighFive::Config.new
       yield @@instance
 
@@ -54,7 +55,7 @@ module HighFive
       rescue LoadError
         raise "high_five configuration not found, forgot to run 'hi5 init'?"
       end
-      return @@instance 
+      return @@instance
     end
 
     def self.instance
@@ -78,7 +79,7 @@ module HighFive
             new_config.instance_variable_set(svar, self.instance_variable_get(svar))
           end
         end
-        new_config.js_settings.merge! self.js_settings do |key, new_setting, old_setting| 
+        new_config.js_settings.merge! self.js_settings do |key, new_setting, old_setting|
           new_setting || old_setting #don't clobber settings from the parent
         end
         new_config.platform_configs = @platform_configs.reject do |key, platform_config|
@@ -122,7 +123,7 @@ module HighFive
         @js_settings = {}
       end
       @is_environment = false
-    end 
+    end
 
     def assets(path)
       @static_assets << path.dup
@@ -132,7 +133,7 @@ module HighFive
       @static_javascripts << path.dup
     end
 
-    def sass(path) 
+    def sass(path)
       @sass_files << path.dup
     end
 

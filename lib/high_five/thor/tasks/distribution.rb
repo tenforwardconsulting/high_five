@@ -16,7 +16,10 @@ module HighFive
         method_option :provisioning_profile, :aliases => "-p", :desc => "Path to the provisioning profile"
         method_option :target, :desc => "iOS target to build"
         method_option :install, :aliases => "-i", type: :boolean, :desc => "Install on device after building"
+        method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
+
         def dist(platform)
+          @environment            = options[:environment]
           @output_file_name       = options[:output_file_name]
           @sign_identity          = options[:sign_identity]
           @provisioning_profile   = options[:provisioning_profile]
@@ -28,7 +31,7 @@ module HighFive
           self.destination_root = @config.destination
 
           if @platform == "android" || @platform == "amazon"
-            manifest_path = android_manifest_path
+            manifest_path = @config.android_manifest || android_manifest_path
             android_path = File.dirname(manifest_path)
 
             dist_android(android_path)
