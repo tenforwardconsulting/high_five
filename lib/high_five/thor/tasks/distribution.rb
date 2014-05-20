@@ -14,7 +14,7 @@ module HighFive
         method_option :output_file_name, :aliases => "-o", :desc => "Name of the final output file. Defaults to project_name.apk/ipa"
         method_option :sign_identity, :aliases => "-s", :desc => "Full name of the code sign identity for use by xcode"
         method_option :provisioning_profile, :aliases => "-p", :desc => "Path to the provisioning profile"
-        method_option :target, :desc => "iOS target to build"
+        method_option :target, :desc => "iOS target to build (can also be set in environment)"
         method_option :install, :aliases => "-i", type: :boolean, :desc => "Install on device after building"
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
 
@@ -49,7 +49,7 @@ module HighFive
             end
 
             ios_project_name = File.basename(Dir[ios_path + "/*.xcodeproj"].first, '.xcodeproj')
-            ios_target = options[:target] || ios_project_name
+            ios_target = options[:target] || @config.ios_target || ios_project_name
             keychain = ios_project_name.gsub(/\s/, '').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').tr("-", "_").downcase + '-ios.keychain'
 
             @output_file_name ||= ios_target

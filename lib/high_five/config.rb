@@ -29,16 +29,18 @@ module HighFive
       @@config_variables = config_variables
     end
 
-    config_setting :root,         # Root of the project
-                   :destination,  # generated folder for project('www')
-                   :page_title,   # <title>#{page_title}</title>
-                   :compass_dir,  # directory that contaings compass' config.rb
-                   :dev_index,    # copy generated index.html to here on build for use in development
-                   :minify,       # defaults to true in production mode and false otherwise, overridable
-                   :manifest,     # generate html5 manifest
-                   :app_name,     # App Name
-                   :app_id,        # App id (com.tenforwardconsulting.myapp)
-                   :android_manifest # Path to the android manifest, relative to the project root
+    config_setting :root,             # Root of the project
+                   :destination,      # generated folder for project('www')
+                   :page_title,       # <title>#{page_title}</title>
+                   :compass_dir,      # directory that contaings compass' config.rb
+                   :dev_index,        # copy generated index.html to here on build for use in development
+                   :minify,           # defaults to true in production mode and false otherwise, overridable
+                   :manifest,         # generate html5 manifest
+                   :app_name,         # App Name
+                   :app_id,           # App id (com.tenforwardconsulting.myapp)
+                                      # config options below are used in the dist/build tasks
+                   :android_manifest, # Path to the android manifest, relative to the project root
+                   :ios_target        # ios target to be used by dist tasks
 
     def self.configure(&block)
       @@instance = HighFive::Config.new

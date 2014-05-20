@@ -25,9 +25,11 @@ module HighFive
         desc "set_version", "Change the version and build number"
         method_option :version, :aliases => "-v", :desc => "Set main version"
         method_option :build_number, :aliases => '-b', :desc => "set build number"
+        method_option :environment, :aliases => '-e', :desc => "Set environment"
         def set_version
+          config = base_config.build_platform_config(:android).build_platform_config(options[:environment])
           # read and parse the old file
-          file = File.read(android_manifest_path)
+          file = File.read(config.android_manifest || android_manifest_path)
           xml = Nokogiri::XML(file)
 
           # replace \n and any additional whitespace with a space

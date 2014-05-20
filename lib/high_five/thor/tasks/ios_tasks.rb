@@ -12,9 +12,12 @@ module HighFive
         desc "set_version", "build the debug apk via ant debug"
         method_option :version, :aliases => "-v", :desc => "Set main version"
         method_option :build_number, :aliases => '-b', :desc => "set build number"
+        method_option :environment, :aliases => '-e', :desc => "environment"
         method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist"
         def set_version
-          info = info_plist_path(options[:target])
+          config = base_config.build_platform_config(:ios).build_platform_config(options[:environment])
+          target = options[:target] || config.ios_target
+          info = info_plist_path(target)
           puts "Using #{info}"
           plist = Plist::parse_xml(info)
 
