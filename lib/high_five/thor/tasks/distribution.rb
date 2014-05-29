@@ -17,6 +17,7 @@ module HighFive
         method_option :target, :desc => "iOS target to build (can also be set in environment)"
         method_option :install, :aliases => "-i", type: :boolean, :desc => "Install on device after building"
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
+        method_option :"ant-flags", :desc => "Additional flags to pass directly to ant (android only)"
 
         def dist(platform)
           @environment            = options[:environment]
@@ -55,20 +56,21 @@ module HighFive
             @output_file_name ||= ios_target
 
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
-            ENV['uuid'] = uuid
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
             system(%Q(cd "#{ios_path}";
-              /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
+              /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release CONFIGURATION_BUILD_DIR="#{ios_path}/build" CODE_SIGN_IDENTITY="#{@sign_identity}" PROVISIONING_PROFILE="#{uuid}" clean build ))
             system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
           end
         end
 
         desc "dist_android [ANDROID_PATH]", "Create a distribution package for android"
         method_option :output_file_name, :aliases => "-o", :desc => "Name of the final output file. Defaults to project_name.apk/ipa"
+        method_option :"ant-flags", :desc => "Additional flags to pass directly to ant"
         def dist_android(android_path)
           @output_file_name       = options[:output_file_name]
+          ant_flags = options[:"ant-flags"] || ""
           system("android update project --path #{android_path} --subprojects")
-          system("ant -file '#{android_path}/build.xml' release")
+          system("ant -file '#{android_path}/build.xml' release #{ant_flags}")
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
           if @output_file_name
