@@ -18,22 +18,23 @@ module HighFive
         method_option :install, :aliases => "-i", type: :boolean, :desc => "Install on device after building"
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
         method_option :"ant-flags", :desc => "Additional flags to pass directly to ant (android only)"
+        method_option :platform_path, :desc => "Path to ios or android directory"
 
         def dist(platform)
           @environment            = options[:environment]
           @output_file_name       = options[:output_file_name]
           @sign_identity          = options[:sign_identity]
           @provisioning_profile   = options[:provisioning_profile]
+          @platform_path          = options[:platform_path]
           @platform               = platform
-          @config                 = base_config.build_platform_config(@platform).build_platform_config(@environment)
-          @config_root            = File.join("config", "high_five")
-
-          raise "Please set config.destination" if @config.destination.nil?
-          self.destination_root = @config.destination
 
           if @platform == "android" || @platform == "amazon"
-            manifest_path = @config.android_manifest || android_manifest_path
-            android_path = File.dirname(manifest_path)
+            if @platform_path
+              android_path = @platform_path
+            else
+              manifest_path = config.android_manifest || android_manifest_path
+              android_path = File.dirname(manifest_path)
+            end
 
             dist_android(android_path)
             if options[:install]
@@ -43,14 +44,18 @@ module HighFive
             raise "Please pass in the code sign identity to build an ios app. -s [sign_identity]" if @sign_identity.nil?
             raise "Please pass in the path to the provisioning profile to build an ios app. -p [provisioning_profile]" if @provisioning_profile.nil?
 
-            ios_path = File.dirname(xcodeproj_path())
+            if @platform_path
+              ios_path = @platform_path
+            else
+              ios_path = File.dirname(xcodeproj_path())
+            end
 
             if !ios_path
               raise "Couldn't find the path of the xcodeproj."
             end
 
             ios_project_name = File.basename(Dir[ios_path + "/*.xcodeproj"].first, '.xcodeproj')
-            ios_target = options[:target] || @config.ios_target || ios_project_name
+            ios_target = options[:target] || config.ios_target || ios_project_name
             keychain = ios_project_name.gsub(/\s/, '').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').tr("-", "_").downcase + '-ios.keychain'
 
             @output_file_name ||= ios_target
@@ -82,6 +87,12 @@ module HighFive
         desc "install_android [ANDROID_PATH]", "Install the distribution package on the connected android device or emulator"
         def install_android(android_path)
           system("ant -file '#{android_path}/build.xml' installr")
+        end
+
+        private
+
+        def config
+          base_config.build_platform_config(@platform).build_platform_config(@environment)
         end
       end
     end
