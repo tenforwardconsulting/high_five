@@ -19,7 +19,6 @@ module HighFive
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
         method_option :"ant-flags", :desc => "Additional flags to pass directly to ant (android only)"
         method_option :platform_path, :desc => "Path to ios or android directory"
-
         def dist(platform)
           @environment            = options[:environment]
           @output_file_name       = options[:output_file_name]
@@ -43,16 +42,6 @@ module HighFive
           elsif @platform == "ios"
             raise "Please pass in the code sign identity to build an ios app. -s [sign_identity]" if @sign_identity.nil?
             raise "Please pass in the path to the provisioning profile to build an ios app. -p [provisioning_profile]" if @provisioning_profile.nil?
-
-            if @platform_path
-              ios_path = @platform_path
-            else
-              ios_path = File.dirname(xcodeproj_path())
-            end
-
-            if !ios_path
-              raise "Couldn't find the path of the xcodeproj."
-            end
 
             ios_project_name = File.basename(Dir[ios_path + "/*.xcodeproj"].first, '.xcodeproj')
             ios_target = options[:target] || config.ios_target || ios_project_name
