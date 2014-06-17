@@ -52,9 +52,9 @@ module HighFive
               puts "Skipping #{icon_entry} because the file is missing.  This will cause problems with app store submission"
               next
             end
-            
+            print "Replacing #{old_icon_path}..."
             old_image = ChunkyPNG::Image.from_file(old_icon_path)
-            puts "Replacing #{old_icon_path} (#{old_image.width}x#{old_image.height})..."
+            puts "#{old_image.width}x#{old_image.height}"
             
             image.resize(old_image.height, old_image.width).save(old_icon_path)
           end
