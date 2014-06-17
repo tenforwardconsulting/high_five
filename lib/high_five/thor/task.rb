@@ -28,6 +28,7 @@ module HighFive
           begin 
             @base_config ||= HighFive::Config.load
           rescue StandardError => e
+            raise e
             say e.message, :red
             exit
           end

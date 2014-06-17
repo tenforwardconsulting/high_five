@@ -26,10 +26,10 @@ module HighFive
         method_option :version, :aliases => "-v", :desc => "Set main version"
         method_option :build_number, :aliases => '-b', :desc => "set build number"
         method_option :environment, :aliases => '-e', :desc => "Set environment"
+        method_option :platform_path, desc: "Path to the ios or android directory"
         def set_version
-          config = base_config.build_platform_config(:android).build_platform_config(options[:environment])
           # read and parse the old file
-          file = File.read(config.android_manifest || android_manifest_path)
+          file = File.read(android_manifest_path)
           xml = Nokogiri::XML(file)
 
           # replace \n and any additional whitespace with a space
@@ -53,6 +53,7 @@ module HighFive
         end
 
         desc "set_icon", "Generate app icons from base png image"
+        method_option :platform_path, desc: "Path to the ios or android directory"
         def set_icon(path)
           image = ChunkyPNG::Image.from_file(path)
 
@@ -66,6 +67,11 @@ module HighFive
             image.resize(size, size).save(File.join(dir, icon_name))
             puts "Writing #{size}x#{size} -> #{File.join(dir, icon_name)}"
           end
+        end
+
+        private
+        def config
+          base_config.build_platform_config(:android).build_platform_config(options[:environment])
         end
       end
     end

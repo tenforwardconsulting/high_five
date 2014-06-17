@@ -10,7 +10,14 @@ module HighFive
     end
 
     def android_manifest_path
+      if options[:platform_path]
+        platform_path = File.join(options[:platform_path], "AndroidManifest.xml")
+        return platform_path if File.exists?(platform_path)
+      end
+
       platform_config = base_config.build_platform_config(:android)
+      return platform_config.android_manifest if platform_config.android_manifest
+
       destination_dir = platform_config.destination
       root_dir = destination_dir
       while true
