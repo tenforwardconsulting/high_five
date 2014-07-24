@@ -7,6 +7,7 @@ module HighFive
       class IosTasks < ::HighFive::Thor::Task
         include ::Thor::Actions
         include ::HighFive::IosHelper
+        include ::HighFive::ImageHelper
         namespace :ios
 
         desc "set_version", "build the debug apk via ant debug"
@@ -35,19 +36,20 @@ module HighFive
         method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist"
         method_option :platform_path, :desc => "Path to ios or android directory"
         def set_icon(path)
-          image = ChunkyPNG::Image.from_file(path)
-
           icon_files = plist['CFBundleIcons']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
           icon_files += [ plist['CFBundleIconFile'] ]
           icon_files += plist['CFBundleIcons~ipad']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
-          
           icon_files.each do |icon_entry|
             icon_file_name = icon_entry
             unless icon_entry.end_with? ".png"
               icon_file_name += ".png"
             end
 
-            old_icon_path = Dir[File.join(ios_path, "**/#{icon_file_name}")].first
+            # look in a directory named after the target first, if it's present
+            # This helps with multi-target apps
+            old_icon_path = Dir[File.join(ios_path, "#{target}/**/#{icon_file_name}")].first 
+            old_icon_path = Dir[File.join(ios_path, "**/#{icon_file_name}")].first if old_icon_path.nil?
+
             if old_icon_path.nil?
               puts "Skipping #{icon_entry} because the file is missing.  This will cause problems with app store submission"
               next
@@ -55,8 +57,8 @@ module HighFive
             print "Replacing #{old_icon_path}..."
             old_image = ChunkyPNG::Image.from_file(old_icon_path)
             puts "#{old_image.width}x#{old_image.height}"
+            replace_image(old_icon_path, path)
             
-            image.resize(old_image.height, old_image.width).save(old_icon_path)
           end
         end
 
