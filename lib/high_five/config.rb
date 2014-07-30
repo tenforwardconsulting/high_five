@@ -89,7 +89,7 @@ module HighFive
         end
         return new_config
       else
-        return self
+        raise 'platform not found in config'
       end
     end
 
