@@ -54,10 +54,12 @@ module HighFive
 
         desc "set_icon", "Generate app icons from base png image"
         method_option :platform_path, desc: "Path to the ios or android directory"
+        method_option :environment, :aliases => '-e', :desc => "Set environment"
         def set_icon(path)
           image = ChunkyPNG::Image.from_file(path)
 
           manifest = File.read(android_manifest_path)
+          puts "Using android manifest: #{android_manifest_path}"
           icon_name = manifest.match(/android:icon="@drawable\/(.*?)"/)[1] + '.png'
 
           drawable_dir = File.join File.dirname(android_manifest_path), 'res'

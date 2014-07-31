@@ -16,6 +16,9 @@ module HighFive
       end
 
       platform_config = base_config.build_platform_config(:android)
+      if options[:environment]
+        platform_config = platform_config.build_platform_config(options[:environment])
+      end
       return platform_config.android_manifest if platform_config.android_manifest
 
       destination_dir = platform_config.destination

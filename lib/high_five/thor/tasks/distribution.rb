@@ -65,7 +65,7 @@ module HighFive
           @output_file_name       = options[:output_file_name]
           ant_flags = options[:"ant-flags"] || ""
           system("android update project --path #{android_path} --subprojects")
-          system("ant -file '#{android_path}/build.xml' release #{ant_flags}")
+          system("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
           if @output_file_name
