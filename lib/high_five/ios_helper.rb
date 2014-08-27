@@ -30,9 +30,11 @@ module HighFive
     def info_plist_path(target=nil)
       root_dir = ios_path
       target = "*" if target.nil?
-      info =  Dir["#{root_dir}/**/#{target}-Info.plist"].first
-      raise "Couldn't find infoplist" if info.nil?
-      return info
+      Dir["#{root_dir}/**/#{target}-Info.plist"].each do |path|
+        next if path =~ /\/build\//
+        return path
+      end
+      raise "Couldn't find infoplist in #{root_dir}"
     end
 
     def xcodeproj_path

@@ -29,7 +29,7 @@ module HighFive
           File.open(plist_path, 'w') do |f|
             f.write(Plist::Emit.dump(plist))
           end
-          puts "Wrote Info.plist succesfully"
+          puts "Wrote #{plist_path} succesfully"
         end
 
         desc "set_icon", "Generate app icons from base png image"
