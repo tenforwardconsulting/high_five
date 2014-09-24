@@ -20,15 +20,9 @@ module HighFive
 
     def rmagick?
       @rmagick ||= begin
-        begin
-          require "rmagick"
-          puts "Using rmagick..."
-          true
-        rescue LoadError
-          require 'RMagick'
-          puts "Using RMagick..."
-          true
-        end
+        require 'RMagick'
+        puts "Using RMagick..."
+        true
       rescue LoadError
         puts "Using ChunkyPNG..."
         false
