@@ -8,6 +8,7 @@ module HighFive
       class AndroidTasks < ::HighFive::Thor::Task
         include ::Thor::Actions
         include HighFive::AndroidHelper
+        include ::HighFive::ImageHelper
         namespace :android
 
         desc "debug", "build the debug apk via ant debug"
@@ -66,8 +67,9 @@ module HighFive
           valid_directories(drawable_dir).each do |dir|
             res = parse_resolution(dir)
             size = res_map[res]
-            image.resize(size, size).save(File.join(dir, icon_name))
-            puts "Writing #{size}x#{size} -> #{File.join(dir, icon_name)}"
+            icon_path = File.join(dir, icon_name)
+            replace_image icon_path, path
+            puts "Writing #{size}x#{size} -> #{icon_path}"
           end
         end
 

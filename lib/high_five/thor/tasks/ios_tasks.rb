@@ -1,5 +1,5 @@
 require 'high_five/ios_helper'
-require 'plist' 
+require 'plist'
 
 module HighFive
   module Thor
@@ -33,7 +33,7 @@ module HighFive
         end
 
         desc "set_icon", "Generate app icons from base png image"
-        method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist"
+        method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist)"
         method_option :platform_path, :desc => "Path to ios or android directory"
         def set_icon(path)
           icon_files = plist['CFBundleIcons']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
@@ -47,7 +47,7 @@ module HighFive
 
             # look in a directory named after the target first, if it's present
             # This helps with multi-target apps
-            old_icon_path = Dir[File.join(ios_path, "#{target}/**/#{icon_file_name}")].first 
+            old_icon_path = Dir[File.join(ios_path, "#{target}/**/#{icon_file_name}")].first
             old_icon_path = Dir[File.join(ios_path, "**/#{icon_file_name}")].first if old_icon_path.nil?
 
             if old_icon_path.nil?
@@ -58,7 +58,6 @@ module HighFive
             old_image = ChunkyPNG::Image.from_file(old_icon_path)
             puts "#{old_image.width}x#{old_image.height}"
             replace_image(old_icon_path, path)
-            
           end
         end
 
