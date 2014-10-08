@@ -139,4 +139,28 @@ describe HighFive::Thor::Tasks::Deploy do
     end
   end
 
+  context "Static assets" do 
+    before :all do
+      create_dummy_app!
+      HighFive::Config.configure do |config|
+        config.root = @project_root
+        config.destination = "www"
+        config.assets "stylesheets"
+        config.assets "public/custom_path", destination: "/"
+      end
+      cli(HighFive::Thor::Tasks::Deploy).deploy("web")
+    end
+    after(:all) { destroy_dummy_app! }
+
+    it "should include the entire static asset directory as-is at the destination" do
+      expect(File.join(@project_root, "www", "stylesheets/screen.css")).to exist
+    end
+
+    it "should respect the destination option" do
+      expect(File.join(@project_root, "www", "public/custom_path")).not_to exist
+      expect(File.join(@project_root, "www", "custom_app/controllers/custom_controller.js")).to exist
+      expect(File.join(@project_root, "www", "custom_app.js")).to exist
+    end
+  end
+
 end

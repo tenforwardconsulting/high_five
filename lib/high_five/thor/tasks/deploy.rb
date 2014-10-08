@@ -129,19 +129,26 @@ module HighFive
           end
 
           # Adds each of the static assets to the generated folder (sylesheets etc)
-          @config.static_assets.each do |path|
+          @config.static_assets.each do |path, options|
             asset = find_in_source_paths(path)
+            destination = path 
+            if (options[:destination])
+              destination = File.join(self.destination_root, options[:destination])
+              puts "OVERRIDING with #{options[:destination]}"
+            end
+            puts "DESTINATION: #{destination}"
             if File.directory? asset
-              directory asset, path
+              directory asset, destination
             else
-              copy_file asset, path
+              copy_file asset, destination
             end
           end
 
           if (@config.manifest && @environment == 'production')
             @manifest_attr = %Q(manifest="manifest.appcache") #for <html manifest=>
             say "     create manifest", :green
-            @manifest_cache = @config.static_assets.collect do |path|
+            @manifest_cache = @config.static_assets.collect do |path, options|
+              #FIXME: This doesn't respect the options[:destination]
               if (File.directory?(path))
                 Dir.glob(path + "/**/*").reject {|x| File.directory?(x) }
               else

@@ -73,14 +73,14 @@ describe HighFive::Config do
 
     it "inherits from platforms" do 
       config = @config.build_platform_config(:android).build_platform_config(:production)
-      config.static_assets.should include "android_asset"
-      config.static_assets.should include "production_asset"
+      config.static_assets.should include ["android_asset", {}]
+      config.static_assets.should include ["production_asset", {}]
     end
 
     it "doesn't care about the inherit order" do 
       config = @config.build_platform_config(:production).build_platform_config(:android)
-      config.static_assets.should include "android_asset"
-      config.static_assets.should include "production_asset"
+      config.static_assets.should include ["android_asset", {}]
+      config.static_assets.should include ["production_asset", {}]
     end
 
     it "merges settings" do 

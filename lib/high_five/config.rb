@@ -127,8 +127,8 @@ module HighFive
       @is_environment = false
     end
 
-    def assets(path)
-      @static_assets << path.dup
+    def assets(path, options={})
+      @static_assets << [path.dup, options.dup]
     end
 
     def javascripts(path)
