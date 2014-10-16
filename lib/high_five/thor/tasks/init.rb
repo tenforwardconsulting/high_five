@@ -2,7 +2,7 @@ require 'fileutils'
 module HighFive
   module Thor
     module Tasks
-      class Initialization < ::HighFive::Thor::Task
+      class Init < ::HighFive::Thor::Task
         include ::Thor::Actions
         default_task :init
 
@@ -25,7 +25,7 @@ module HighFive
             end
           end
         end
-      end 
+      end
     end
   end
 end

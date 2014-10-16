@@ -3,10 +3,10 @@ require 'high_five/android_helper'
 module HighFive
   module Thor
     module Tasks
-      class Distribution < ::HighFive::Thor::Task
+      class Dist < ::HighFive::Thor::Task
         include ::Thor::Actions
-        include IosHelper
-        include AndroidHelper
+        include ::HighFive::IosHelper
+        include ::HighFive::AndroidHelper
 
         default_task :dist
 

@@ -5,11 +5,10 @@ require 'nokogiri'
 module HighFive
   module Thor
     module Tasks
-      class AndroidTasks < ::HighFive::Thor::Task
+      class Android < ::HighFive::Thor::Task
         include ::Thor::Actions
-        include HighFive::AndroidHelper
+        include ::HighFive::AndroidHelper
         include ::HighFive::ImageHelper
-        namespace :android
 
         desc "debug", "build the debug apk via ant debug"
         def debug(target)

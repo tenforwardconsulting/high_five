@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   }
 
   s.add_dependency 'multi_json', '~> 1.0'
-  s.add_runtime_dependency "thor", "~>0.17.0"
+  s.add_runtime_dependency "thor", "~>0.18.0"
   s.add_runtime_dependency "compass", "~>0.12.2"
   s.add_runtime_dependency "yui-compressor", "~>0.9.6"
   s.add_runtime_dependency "uglifier", "~>2.1.1"

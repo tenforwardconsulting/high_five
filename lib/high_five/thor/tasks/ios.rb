@@ -4,11 +4,10 @@ require 'plist'
 module HighFive
   module Thor
     module Tasks
-      class IosTasks < ::HighFive::Thor::Task
+      class Ios < ::HighFive::Thor::Task
         include ::Thor::Actions
         include ::HighFive::IosHelper
         include ::HighFive::ImageHelper
-        namespace :ios
 
         desc "set_version", "build the debug apk via ant debug"
         method_option :version, :aliases => "-v", :desc => "Set main version"
