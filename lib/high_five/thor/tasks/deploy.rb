@@ -23,7 +23,7 @@ module HighFive
           @meta         = {}
           @config       = base_config.build_platform_config(@platform).build_platform_config(@environment)
           @config_root  = File.join("config", "high_five")
-          
+
           self.source_paths << File.join(base_config.root, @config_root)
           self.source_paths << File.join(base_config.root)
           self.source_paths << File.join(File.dirname(__FILE__), '..', '..', 'generators')
@@ -41,7 +41,8 @@ module HighFive
           say "Deploying app: <#{@platform}> <#{options[:environment]}>"
           say "\t#{self.destination_root}"
           say " -Weinre url: #{@weinre_url}" if @weinre_url
-          
+
+
           if @config.compass_dir
             compass_dir = File.join(base_config.root, @config.compass_dir)
             say "Precompiling compass styles from #{compass_dir}}"
@@ -66,12 +67,12 @@ module HighFive
             p source_paths
             error "#{@platform} is not a valid target.  Please create #{platform_file}" and Process.exit
           end
-          
+
 
           if (@environment == "production")
             appjs = File.join(self.destination_root, "app.js")
             @javascripts = ["app.js"]
-            
+
             output_js = nil
             if @config.minify  == :uglifier
               say "      uglify  #{appjs}", :green
@@ -83,7 +84,7 @@ module HighFive
               say "      create  #{appjs}", :green
               output_js = bundle.to_s
             end
-            File.open(appjs, "w") do |file| 
+            File.open(appjs, "w") do |file|
               file.write output_js
             end
             output_js = nil
@@ -103,14 +104,14 @@ module HighFive
               directory javascript
               @javascripts.unshift(*Dir[File.join(javascript,'**','*.js')])
             else
-              copy_file javascript unless javascript =~ /^https?:\/\// 
+              copy_file javascript unless javascript =~ /^https?:\/\//
               @javascripts.unshift javascript
             end
           end
 
           @stylesheets = []
           @config.sass_files.each do |sass_file|
-            asset_name = File.basename(sass_file, File.extname(sass_file)) 
+            asset_name = File.basename(sass_file, File.extname(sass_file))
             css_file = File.join(self.destination_root, "stylesheets", "#{asset_name}.css")
             say "Compiling #{sass_file} -> #{css_file}"
             Sass.compile_file sass_file, css_file
@@ -131,12 +132,10 @@ module HighFive
           # Adds each of the static assets to the generated folder (sylesheets etc)
           @config.static_assets.each do |path, options|
             asset = find_in_source_paths(path)
-            destination = path 
+            destination = path
             if (options[:destination])
               destination = File.join(self.destination_root, options[:destination])
-              puts "OVERRIDING with #{options[:destination]}"
             end
-            puts "DESTINATION: #{destination}"
             if File.directory? asset
               directory asset, destination
             else
@@ -171,8 +170,8 @@ module HighFive
             FileUtils.cp(File.join(self.destination_root, "index.html"), File.join(@config.root, @config.dev_index))
           end
         end
-      
-        private 
+
+        private
 
         def builder
           @builder ||= get_builder
@@ -190,7 +189,7 @@ module HighFive
           builder
         end
 
-        #TODO: this probably doesn't work on windows 
+        #TODO: this probably doesn't work on windows
         def compress_javascript(file_name)
           say " -Compressing #{file_name} with yuicompressor", :yellow
 

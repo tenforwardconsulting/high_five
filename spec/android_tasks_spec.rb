@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'chunky_png'
 
-describe HighFive::Thor::Tasks::AndroidTasks do
+describe HighFive::Thor::Tasks::Android do
   include HighFive::TestHelper
   include HighFive::AndroidHelper
 
@@ -23,7 +23,7 @@ describe HighFive::Thor::Tasks::AndroidTasks do
   context 'Set icon' do
     let(:drawable_dir) { File.join(@project_root, 'android', 'res') }
     before(:all) do
-      cli(HighFive::Thor::Tasks::AndroidTasks).set_icon File.join(@project_root, 'test_icon.png')
+      cli(HighFive::Thor::Tasks::Android).set_icon File.join(@project_root, 'test_icon.png')
     end
 
     it 'creates icons for each drawable- folder' do
@@ -53,7 +53,7 @@ describe HighFive::Thor::Tasks::AndroidTasks do
 
   context "Set version" do
     it 'updates version number' do
-      cli(HighFive::Thor::Tasks::AndroidTasks, version: '2.0').set_version
+      cli(HighFive::Thor::Tasks::Android, version: '2.0').set_version
       manifest = File.read(File.join(@project_root, 'android', 'AndroidManifest.xml'))
       expect(manifest).to match(/android:versionName="2.0"/)
     end

@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "chunky_png"
   s.add_runtime_dependency "webrick"
   s.add_development_dependency "rspec", "~>2.13.0"
+  s.add_development_dependency "pry"
 
 
   s.files         = `git ls-files`.split("\n")

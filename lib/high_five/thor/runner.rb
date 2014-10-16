@@ -2,9 +2,15 @@ require "thor/runner"
 require 'high_five/thor/task'
 require 'high_five/thor/tasks'
 
+
 module HighFive
   module Thor
     class Runner < ::Thor::Runner
+      #this works but I hate it
+      register(HighFive::Thor::Tasks::Dist, "dist", "dist [PLATFORM]", "Shortcut to distribution:dist")
+      register(HighFive::Thor::Tasks::Deploy, "deploy", "deploy [PLATFORM]", "Shortcut to deploy:deploy")
+      register(HighFive::Thor::Tasks::Init, "init", "init", "Shortcut to Initialization:init")
+
       # Note: because of the way task.run works, there has to be a local
       # definition. Also, we want tasks to work WITH our base namespace
       # if it is included, so that we can use our binary with the same
