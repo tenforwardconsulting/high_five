@@ -1,14 +1,9 @@
 #!/usr/bin/env ruby
 require 'high_five'
 require 'high_five/thor/runner'
-
-# begin
-#   require 'high_five'
-# rescue LoadError
-#   require 'rubygems'
-#   require 'high_five'
-# end
-# require 'high_five/cli'
+bin_file = Pathname.new(__FILE__).realpath
+# add self to libpath
+$:.unshift File.expand_path("../../lib", bin_file)
 
 $thor_runner = true
 $high_five_runner = true
