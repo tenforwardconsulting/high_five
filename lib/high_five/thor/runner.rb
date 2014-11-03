@@ -24,6 +24,10 @@ module HighFive
         super meth, *args
       end
 
+      def version
+        say "High Five v#{HighFive::VERSION}"
+      end
+
       private
       def thorfiles(*args)
         Dir[File.join(File.dirname(__FILE__), 'tasks/*.rb')]

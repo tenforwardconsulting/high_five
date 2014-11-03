@@ -68,7 +68,9 @@ module HighFive
           system("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
+
           if @output_file_name
+            say "copying final build #{android_path}/bin/#{android_name}-release.apk -> #{android_path}/bin/#{@output_file_name}.apk"
             FileUtils.cp("#{android_path}/bin/#{android_name}-release.apk", "#{android_path}/bin/#{@output_file_name}.apk")
           end
         end
