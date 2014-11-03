@@ -19,9 +19,9 @@ module HighFive
       config_variables = []
       settings.each do |setting|
         attr_accessor setting
+        var = "@#{setting}".to_sym
+        config_variables << var
         define_method setting do |*args|
-          var = "@#{setting}".to_sym
-          config_variables << var
           instance_variable_set(var, args[0]) if args.length == 1
           instance_variable_get(var)
         end

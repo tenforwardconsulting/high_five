@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'tmpdir'
 require 'fileutils'
 
-describe HighFive::Thor::Tasks::Initialization do 
+describe HighFive::Thor::Tasks::Init do
   before :each do
     @original_dir = Dir.pwd
     @project_root = Dir.mktmpdir("hi5")
@@ -15,7 +15,7 @@ describe HighFive::Thor::Tasks::Initialization do
   end
 
   it "should create high_five.rb in the config directory" do
-    ::HighFive::Thor::Tasks::Initialization.start(["init"])
+    ::HighFive::Thor::Tasks::Init.start(["init"])
     Dir.exists?(File.join(@project_root, "config")).should be_true
     File.exists?(File.join(@project_root, "config", "high_five.rb")).should be_true
     Dir.exists?(File.join(@project_root, "config", "high_five")).should be_true

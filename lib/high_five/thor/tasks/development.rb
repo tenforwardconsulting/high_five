@@ -4,7 +4,7 @@ module HighFive
     module Tasks
       class Development < ::HighFive::Thor::Task
         include ::Thor::Actions
-        
+
         desc "server", "Run a web server for a specific environment or path"
         method_option :platform, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
         method_option :platform_path, :desc => "Path to ios or android directory for the platform we want to serve"
@@ -18,7 +18,7 @@ module HighFive
               end
             end
           else
-            root = base_config.build_platform_config(platform).destination_root
+            root = base_config.build_platform_config(platform).destination
           end
 
           puts "Starting server with root=#{root}"
