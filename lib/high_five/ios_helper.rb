@@ -15,7 +15,7 @@ module HighFive
 
     def ios_path
       if options[:platform_path]
-        ios_path = options[:platform_path]
+        ios_path = File.expand_path options[:platform_path]
       else
         ios_path = File.dirname xcodeproj_path
       end
