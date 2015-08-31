@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    high_five (0.3.2)
+    high_five (0.3.4)
       chunky_png
       coffee-script (~> 2.2.0)
       compass (~> 0.12.2)
