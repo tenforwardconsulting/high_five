@@ -16,19 +16,29 @@ module HighFive
         method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist"
         method_option :platform_path, :desc => "Path to ios or android directory"
         def set_version
-          if (options[:version])
-            puts "Changing version from #{plist["CFBundleShortVersionString"]} => #{options[:version]}"
-            plist["CFBundleShortVersionString"] = options[:version]
+          if options[:version]
+            set_plist_property "CFBundleShortVersionString", options[:version]
           end
 
-          if (options[:build_number])
-            puts "Changind build number from #{plist["CFBundleVersion"]} => #{options[:build_number]}"
-            plist["CFBundleVersion"] = options[:build_number]
+          if options[:build_number]
+            set_plist_property "CFBundleVersion", options[:build_number]
           end
-          File.open(plist_path, 'w') do |f|
-            f.write(Plist::Emit.dump(plist))
+
+          write_plist
+        end
+
+        desc "set_property", "Set an info.plist property"
+        method_option :key, :aliases => "-k", :desc => "Key to change"
+        method_option :value, :aliases => "-v", :desc => "New value for the specified key"
+        method_option :environment, :aliases => '-e', :desc => "environment"
+        method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist"
+        method_option :platform_path, :desc => "Path to ios or android directory"
+        def set_property
+          unless options[:key] && options[:value]
+            raise "Need to set key and value options"
           end
-          puts "Wrote #{plist_path} succesfully"
+          set_plist_property options[:key], options[:value]
+          write_plist
         end
 
         desc "set_icon", "Generate app icons from base png image"
@@ -61,6 +71,18 @@ module HighFive
         end
 
         private
+
+        def set_plist_property(key, value)
+          puts "Changing #{key} from #{plist[key]} => #{value}"
+          plist[key] = value
+        end
+
+        def write_plist
+          File.open(plist_path, 'w') do |f|
+            f.write(Plist::Emit.dump(plist))
+          end
+          puts "Wrote #{plist_path} succesfully"
+        end
 
         def target
           options[:target] || base_config.build_platform_config(:ios).build_platform_config(options[:environment]).ios_target
