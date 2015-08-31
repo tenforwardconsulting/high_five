@@ -47,16 +47,14 @@ module HighFive
             ios_target = options[:target] || config.ios_target || ios_project_name
             keychain = ios_project_name.gsub(/\s/, '').gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').tr("-", "_").downcase + '-ios.keychain'
 
-            options[:output_file_name] ||= ios_target
-            outfile = output_file_name("#{ios_path}/build/", ".ipa")
+            @output_file_name ||= ios_target
 
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
             ENV['uuid'] = uuid
-            FileUtils.mkdir_p "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles"
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
             system(%Q(cd "#{ios_path}";
               /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release clean build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
-            system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o #{outfile} --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
+            system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
           end
         end
 
@@ -65,36 +63,21 @@ module HighFive
         method_option :"ant-flags", :desc => "Additional flags to pass directly to ant"
         def dist_android(android_path)
           @output_file_name       = options[:output_file_name]
-          @output_file_name = "#{@output_file_name}.apk" unless @output_file_name.end_with? ".apk"
-          @output_file_name = "#{android_path}/bin/#{@output_file_name}.apk" unless Pathname.new(@output_file_name).absolute?
-
           ant_flags = options[:"ant-flags"] || ""
           system("android update project --path #{android_path} --subprojects")
           system("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
-          outfile = output_file_name "#{android_path}/bin/", ".apk"
-          if outfile
-            say "copying final build #{android_path}/bin/#{android_name}-release.apk -> #{outfile}"
-            FileUtils.cp("#{android_path}/bin/#{android_name}-release.apk", outfile)
+
+          if @output_file_name
+            say "copying final build #{android_path}/bin/#{android_name}-release.apk -> #{android_path}/bin/#{@output_file_name}.apk"
+            FileUtils.cp("#{android_path}/bin/#{android_name}-release.apk", "#{android_path}/bin/#{@output_file_name}.apk")
           end
         end
 
         desc "install_android [ANDROID_PATH]", "Install the distribution package on the connected android device or emulator"
         def install_android(android_path)
           system("ant -file '#{android_path}/build.xml' installr")
-        end
-
-        # default path for the final output file -- depends on platform
-        # default extension including the dot (".apk" or ".ipa")
-        def output_file_name(default_path, default_extention)
-          output_file_name  = options[:output_file_name]
-          if output_file_name.nil?
-            return nil
-          end
-          @output_file_name = "#{@output_file_name}.apk" unless @output_file_name.end_with? default_extention
-          @output_file_name = "#{default_path}#{@output_file_name}.apk" unless Pathname.new(@output_file_name).absolute?
-          "#{@output_file_name}.ipa"
         end
 
         private
