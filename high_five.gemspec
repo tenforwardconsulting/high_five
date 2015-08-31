@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "compass", "~>0.12.2"
   s.add_runtime_dependency "yui-compressor", "~>0.12.0"
   s.add_runtime_dependency "uglifier", "~>2.1.1"
-  s.add_runtime_dependency "sprockets", ">=2.0"
+  s.add_runtime_dependency "sprockets", "~>2.12.3"
   s.add_runtime_dependency "coffee-script", "~>2.2.0"
   s.add_runtime_dependency "plist", ">=3.0"
   s.add_runtime_dependency "nokogiri", ">=1.5.0"
