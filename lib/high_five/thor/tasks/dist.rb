@@ -52,9 +52,10 @@ module HighFive
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
             ENV['uuid'] = uuid
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
-            system(%Q(cd "#{ios_path}";
+            system_or_die("rm #{ios_path}/build/*")
+            system_or_die(%Q(cd "#{ios_path}";
               /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release clean build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
-            system(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
+            system_or_die(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
           end
         end
 
@@ -64,8 +65,8 @@ module HighFive
         def dist_android(android_path)
           @output_file_name       = options[:output_file_name]
           ant_flags = options[:"ant-flags"] || ""
-          system("android update project --path #{android_path} --subprojects")
-          system("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
+          system_or_die("android update project --path #{android_path} --subprojects")
+          system_or_die("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
 
@@ -77,10 +78,17 @@ module HighFive
 
         desc "install_android [ANDROID_PATH]", "Install the distribution package on the connected android device or emulator"
         def install_android(android_path)
-          system("ant -file '#{android_path}/build.xml' installr")
+          system_or_die("ant -file '#{android_path}/build.xml' installr")
         end
 
         private
+
+        def system_or_die(cmd)
+          system(cmd)
+          if $?.exitstatus != 0
+            exit $?.exitstatus
+          end
+        end
 
         def config
           base_config.build_platform_config(@platform).build_platform_config(@environment)
