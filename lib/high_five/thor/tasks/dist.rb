@@ -52,7 +52,7 @@ module HighFive
             uuid = HighFive::IosHelper.uuid_from_mobileprovision(@provisioning_profile)
             ENV['uuid'] = uuid
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
-            system_or_die("rm #{ios_path}/build/*")
+            system_or_die("rm -rf #{ios_path}/build/*")
             system_or_die(%Q(cd "#{ios_path}";
               /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release clean build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
             system_or_die(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}" --sign "#{@sign_identity}"))
