@@ -66,7 +66,12 @@ module HighFive
           @output_file_name       = options[:output_file_name]
           ant_flags = options[:"ant-flags"] || ""
           system_or_die("android update project --path #{android_path} --subprojects")
-          system_or_die("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
+          gradle_file = File.join(android_path, "build.gradle")
+          if File.exists?(gradle_file)
+            system_or_die("gradle -b #{gradle_file} clean assembleRelease")
+          else
+            system_or_die("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
+          end
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
 
