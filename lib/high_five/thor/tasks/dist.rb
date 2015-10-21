@@ -19,6 +19,7 @@ module HighFive
         method_option :environment, :aliases => "-e", :desc => "Environemnt [production|development]", :default => "development"
         method_option :"ant-flags", :desc => "Additional flags to pass directly to ant (android only)"
         method_option :platform_path, :desc => "Path to ios or android directory"
+        method_option :ant, type: :boolean, :desc => "Force using ant to build"
         def dist(platform)
           @environment            = options[:environment]
           @output_file_name       = options[:output_file_name]
@@ -67,7 +68,8 @@ module HighFive
           ant_flags = options[:"ant-flags"] || ""
           system_or_die("android update project --path #{android_path} --subprojects")
           gradle_file = File.join(android_path, "build.gradle")
-          if File.exists?(gradle_file)
+          gradle = File.exists?(gradle_file) && !options[:ant]
+          if gradle
             system_or_die("gradle -b #{gradle_file} clean assembleRelease")
           else
             system_or_die("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
@@ -76,7 +78,7 @@ module HighFive
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
 
           if @output_file_name
-            if File.exists?(gradle_file)
+            if gradle
               say "copying final build #{android_path}/build/outputs/apk/android-release.apk -> #{android_path}/build/outputs/apk/#{@output_file_name}.apk"
               FileUtils.cp("#{android_path}/build/outputs/apk/android-release.apk", "#{android_path}/build/outputs/apk/#{@output_file_name}.apk")
             else
