@@ -1,14 +1,14 @@
 HighFive::Config.configure do |config|
   config.app_name = "ExampleApp"
   config.app_id = "com.example.app"
-  
+
   config.root = File.join(File.dirname(__FILE__), '..')
   config.destination = "www"
 
   # Uncomment this if you're on windows and having problems with a strange ExecJS RuntimeError
   # config.windows!
 
-  # This will add the resources folder to all platforms (stylesheets etc.) 
+  # This will add the resources folder to all platforms (stylesheets etc.)
   # config.assets "resources"
 
   # Include javascript libraries
@@ -18,14 +18,14 @@ HighFive::Config.configure do |config|
   # config.javascripts "lib/jquery-min.js"
 
   # Run `compass compile` in this directory before doing anything
-  # config.compass "resources/sass"
+  # config.compass_dir "resources/sass"
 
   # copy and include these stylesheets in the html
   # config.stylesheets "resources/css/app.css"
   # config.stylesheets "resources/css/jquery-ui.css"
 
   # Basic key/value settings that will be available to your javascript
-  # config.setting base_url: "http://dev.example.com/api" # HighFive.settings.base_url = "http://dev.example.com/api"
+  # config.setting base_url: "http://dev.example.com/api" # HighFive.Settings.base_url = "http://dev.example.com/api"
 
   # Configure plaform specific settings like this
   config.platform :ios do |ios|
@@ -43,8 +43,8 @@ HighFive::Config.configure do |config|
     web.dev_index = "index-debug.html" #copy generated index.html to index-debug (development env only)
   end
 
-  # if you need platform-specific javascripts, 
-  # simply create app-<platform>.js 
+  # if you need platform-specific javascripts,
+  # simply create app-<platform>.js
   # these files are managed by sprockets, and are used to determine the javascript include order
 
   # Environment support: production/development/etc
@@ -60,4 +60,8 @@ HighFive::Config.configure do |config|
     # production.minify :uglifier # or :yui
   end
 
+  # config.environment :lan do |lan|
+    # ip = Socket.ip_address_list.detect{|intf| intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast?}.ip_address
+    # lan.setting apiEndpoint: "http://#{ip}:3000"
+  # end
 end
