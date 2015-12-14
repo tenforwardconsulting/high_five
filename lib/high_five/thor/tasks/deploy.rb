@@ -179,8 +179,13 @@ module HighFive
           if (@config.cordova_path)
             cordova_path = File.join(base_config.root, @config.cordova_path)
             Dir.chdir cordova_path do
-            say "Running cordova prepare in #{Dir.pwd}"
-              if system("`npm bin`/cordova prepare")
+              if @platform == 'ios'
+                FileUtils.mkdir_p("#{cordova_path}/platforms/ios/www")
+              elsif @platform == 'android'
+                FileUtils.mkdir_p("#{cordova_path}/platforms/android/assets/www")
+              end
+              say "Running cordova prepare in #{Dir.pwd}"
+              if system("`npm bin`/cordova prepare #{@platform}")
                 say "Cordova prepare complete"
               else
                 raise "Error running cordova prepare, aborting build"
