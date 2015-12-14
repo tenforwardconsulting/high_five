@@ -22,6 +22,9 @@ module HighFive
       return platform_config.android_manifest if platform_config.android_manifest
 
       destination_dir = platform_config.destination
+      if platform_config.cordova_path
+        destination_dir ||= "#{platform_config.cordova_path}/platforms/android"
+      end
       root_dir = destination_dir
       while true
         glob = Dir[File.join(root_dir, "AndroidManifest.xml")]
