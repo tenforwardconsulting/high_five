@@ -41,6 +41,9 @@ module HighFive
     def xcodeproj_path
       platform_config = base_config.build_platform_config(:ios)
       destination_dir = platform_config.destination
+      if platform_config.cordova_path
+        destination_dir ||= "#{platform_config.cordova_path}/platforms/ios"
+      end
       root_dir = destination_dir
       while true
         glob = Dir[File.join(root_dir, "*.xcodeproj")]
