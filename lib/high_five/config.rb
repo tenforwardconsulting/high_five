@@ -38,6 +38,7 @@ module HighFive
                    :manifest,         # generate html5 manifest
                    :app_name,         # App Name
                    :app_id,           # App id (com.tenforwardconsulting.myapp)
+                   :cordova_path,     # Path to cordova, runs cordova prepare after deploy
                                       # config options below are used in the dist/build tasks
                    :android_manifest, # Path to the android manifest, relative to the project root
                    :ios_target        # ios target to be used by dist tasks

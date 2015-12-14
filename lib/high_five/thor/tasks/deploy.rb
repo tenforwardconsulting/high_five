@@ -31,9 +31,15 @@ module HighFive
             self.source_paths << asset_path
           end
 
-
-          raise "Please set config.destination" if @config.destination.nil?
-          self.destination_root = @config.destination
+          if @config.destination.nil?
+            if @config.cordova_path.nil?
+              raise "Please set config.destination"
+            else
+              self.destination_root = "#{@config.cordova_path}/www"
+            end
+          else
+            self.destination_root = @config.destination
+          end
           FileUtils.rm_rf(self.destination_root)
           FileUtils.mkdir_p(self.destination_root)
 
@@ -168,6 +174,18 @@ module HighFive
           if (!@config.dev_index.nil?)
             say "Cloning to #{@config.dev_index}"
             FileUtils.cp(File.join(self.destination_root, "index.html"), File.join(@config.root, @config.dev_index))
+          end
+
+          if (@config.cordova_path)
+            cordova_path = File.join(base_config.root, @config.cordova_path)
+            Dir.chdir cordova_path do
+            say "Running cordova prepare in #{Dir.pwd}"
+              if system("`npm bin`/cordova prepare")
+                say "Cordova prepare complete"
+              else
+                raise "Error running cordova prepare, aborting build"
+              end
+            end
           end
         end
 

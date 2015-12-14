@@ -3,7 +3,10 @@ HighFive::Config.configure do |config|
   config.app_id = "com.example.app"
 
   config.root = File.join(File.dirname(__FILE__), '..')
-  config.destination = "www"
+  # config.destination = "www"
+
+  # This will run cordova prepare in this directory. Will also default your platform destination to cordova/www
+  # config.cordova_path "cordova"
 
   # Uncomment this if you're on windows and having problems with a strange ExecJS RuntimeError
   # config.windows!
@@ -29,16 +32,17 @@ HighFive::Config.configure do |config|
 
   # Configure plaform specific settings like this
   config.platform :ios do |ios|
-    ios.destination = "www-ios"
+    # ios.destination = "www-ios"
     # ios.assets "resources/ios"
   end
 
   config.platform :android do |android|
-    android.destination = "www-android"
+    # android.destination = "www-android"
     # android.assets "resources/android"
   end
 
   config.platform :Web do |web|
+    web.destination = "www"
     web.manifest = true #generate app cache manifest (production env only)
     web.dev_index = "index-debug.html" #copy generated index.html to index-debug (development env only)
   end
