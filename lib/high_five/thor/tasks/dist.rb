@@ -98,6 +98,7 @@ module HighFive
         def system_or_die(cmd)
           system(cmd)
           if $?.exitstatus != 0
+            puts "FATAL: Cannot execute '#{cmd}'"
             exit $?.exitstatus
           end
         end
