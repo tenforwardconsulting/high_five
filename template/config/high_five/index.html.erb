@@ -1,27 +1,29 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title><%= @meta[:title] %></title>
-        <meta name="description" content="<%= @meta[:description] %>" />
-        <% @stylesheets.each do |ss| -%>
-            <link rel="stylesheet" href="<%= ss %>" type="text/css" />
-        <% end -%>
-        <% if @platform != 'web' -%>
-            <% if @environment == 'development' -%>
-                <script type="text/javascript">
-                    window.onerror = function(e,u,l) {
-                      alert("Error caught" + e + " " + u + ":" + l);
-                    };
-                </script>
-            <% end -%>
-        <% end -%>
-        <%= @high_five_javascript %>
-        <%- @javascripts.each do |js| -%>
-            <script type="text/javascript" src="<%= js %>"></script>
-        <%- end -%>	
+<head>
+  <meta charset="utf-8">
+  <title><%= @meta[:title] %></title>
+  <meta name="description" content="<%= @meta[:description] %>" />
 
-    </head>
-    <body></body>
+  <%- @stylesheets.reverse.each do |ss| -%>
+  <link rel="stylesheet" href="<%= ss %>" type="text/css" />
+  <%- end -%>
+
+  <%- if @platform != 'web' && @environment == 'lan' -%>
+    <script type="text/javascript">
+      window.onerror = function(e,u,l) {
+        alert("Error caught " + e + " " + u + ":" + l);
+      };
+    </script>
+  <%- end -%>
+
+  <%= @high_five_javascript %>
+
+  <%- @javascripts.reverse.each do |js| -%>
+    <script type="text/javascript" src="<%= js %>"></script>
+  <%- end -%>
+</head>
+<body>
+</body>
 </html>
 

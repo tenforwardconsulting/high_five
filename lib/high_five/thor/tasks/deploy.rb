@@ -43,7 +43,7 @@ module HighFive
           FileUtils.rm_rf(self.destination_root)
           FileUtils.mkdir_p(self.destination_root)
 
-          #todo add to config
+          # TODO Add to config
           say "Deploying app: <#{@platform}> <#{options[:environment]}>"
           say "\t#{self.destination_root}"
           say " -Weinre url: #{@weinre_url}" if @weinre_url
