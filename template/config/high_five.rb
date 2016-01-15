@@ -5,67 +5,84 @@ HighFive::Config.configure do |config|
   config.root = File.join(File.dirname(__FILE__), '..')
   # config.destination = "www"
 
-  # This will run cordova prepare in this directory. Will also default your platform destination to cordova/www
+  # This will run cordova prepare in this directory. Will also default your platform destination to cordova/www.
   # config.cordova_path "cordova"
 
-  # Uncomment this if you're on windows and having problems with a strange ExecJS RuntimeError
+  # Uncomment this if you're on windows and having problems with a strange ExecJS RuntimeError.
   # config.windows!
 
-  # This will add the resources folder to all platforms (stylesheets etc.)
-  # config.assets "resources"
+  # Include assets (images, fonts, etc).
+  # This will add the given directory or file to the <destination>/resources directory.
+  # e.g.
+  # config.assets "resources/images"
+  # config.assets "resources/vendor/font-awesome-4.5.0"
 
-  # Include javascript libraries
-  # These get included before everything else in the app, and are *not* minified
-
+  # Include javascript libraries.
+  # These get included before everything else in the app and are *not* minified.
+  # Make sure you link to the minified versions of your assets if that's what you desire.
+  # e.g.
   # config.javascripts "http://maps.google.com/maps/api/js?sensor=true"
-  # config.javascripts "lib/jquery-min.js"
+  # config.javascripts "resources/vendor/javascripts/jquery-min.js"
 
-  # Run `compass compile` in this directory before doing anything
-  # config.compass_dir "resources/sass"
-
-  # copy and include these stylesheets in the html
+  # Include stylesheets.
+  # e.g.
   # config.stylesheets "resources/css/app.css"
   # config.stylesheets "resources/css/jquery-ui.css"
+  # config.stylesheets "resources/vendor/font-awesome-4.5.0/css/font-awesome.min.css"
 
-  # Basic key/value settings that will be available to your javascript
-  # config.setting base_url: "http://dev.example.com/api" # HighFive.Settings.base_url = "http://dev.example.com/api"
+  # Run `compass compile` in this directory before doing anything.
+  # config.compass_dir "resources/sass"
 
-  # Configure plaform specific settings like this
+  # Basic key, value pairs that will be available to your javascript under HighFive.Settings.
+  # config.setting apiEndpoint: "http://dev.example.com/api" # HighFive.Settings.apiEndpoint will return "http://dev.example.com/api"
+
+  # ===========================================================================
+  # Platforms
+  #   Configure plaform specific settings like this.
+  #   Make sure config/high_five/app-<platform>.js exists. Put platform specific javascript in there.
+  #   See existing files for minimum contents.
+  #   Those files are managed by sprockets and are used to determine the javascript include order.
+  # ===========================================================================
   config.platform :ios do |ios|
-    # ios.destination = "www-ios"
+    # ios.destination = "cordova/platforms/ios/www" # Cordova
     # ios.assets "resources/ios"
   end
 
   config.platform :android do |android|
-    # android.destination = "www-android"
+    # android.destination = "cordova/platforms/android/assets/www" # Cordova
     # android.assets "resources/android"
   end
 
-  config.platform :Web do |web|
+  config.platform :web do |web|
     web.destination = "www"
-    web.manifest = true #generate app cache manifest (production env only)
-    web.dev_index = "index-debug.html" #copy generated index.html to index-debug (development env only)
+    web.setting apiEndpoint: 'http://localhost:3000' # Or however you specify your server's location.
+    web.manifest = true # Generate app cache manifest. This is only done when environment is 'production'.
+    web.dev_index = "index-debug.html" # Copy generated index.html to index-debug.
   end
 
-  # if you need platform-specific javascripts,
-  # simply create app-<platform>.js
-  # these files are managed by sprockets, and are used to determine the javascript include order
+  # ===========================================================================
+  # Environments
+  #   Configure environment specific settings like this.
+  #   Environments work just like platforms and allow you to further customize/override settings.
+  #   These take precedence over the platform overrides.
+  #   e.g.
+  #     You can deploy to an iOS device and point the app at your production server.
+  #     or deploy to an Android device and point the app at your dev/staging/qa server.
+  # ===========================================================================
+  config.environment :lan do |lan|
+    ip = Socket.ip_address_list.detect { |intf| intf.ipv4? && !intf.ipv4_loopback? && !intf.ipv4_multicast? }.ip_address
+    lan.setting apiEndpoint: "http://#{ip}:3000" # Or however you specify your server's location.
+    # lan.javascripts "resources/vendor/javascripts/some-library-debug-all.js"
+  end
 
-  # Environment support: production/development/etc
-  # Environments work just like platforms
-  config.environment :development do |development|
-    # development.javascripts "lib/some-library-debug-all.js"
-    # development.setting base_url: "http://dev.example.com:1234/api/"
+  config.environment :dev do |dev|
+    dev.setting apiEndpoint: "http://dev.example.com"
+    # dev.javascripts "lib/some-library-minified.js"
   end
 
   config.environment :production do |production|
+    production.setting apiEndpoint: "http://example.com"
     # production.javascripts "lib/some-library-minified.js"
-    # production.setting base_url: "http://production.example.com/api/" #these take precedence over the platform overrides
     # production.minify :uglifier # or :yui
   end
-
-  # config.environment :lan do |lan|
-    # ip = Socket.ip_address_list.detect{|intf| intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast?}.ip_address
-    # lan.setting apiEndpoint: "http://#{ip}:3000"
-  # end
 end
