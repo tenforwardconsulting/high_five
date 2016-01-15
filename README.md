@@ -240,7 +240,7 @@ e.g. For rails, start your server like this:
 
 According to Brett, only the _first_ time you put a build on your device, you need to do this (replace the keystore, alias, password, and alias password with the correct values for your app):
 
-`hi5 deploy android --environment lan && hi5 dist android --environment lan --install --ant -o "Foobar-android--adhoc" -e --ant-flags="-Dkey.store=foobar.keystore -Dkey.alias=foobar -Dkey.store.password=foobar -Dkey.alias.password=foobar"`
+`hi5 deploy android --environment lan && hi5 dist android --environment lan --install --ant-flags="-Dkey.store=foobar.keystore -Dkey.alias=foobar -Dkey.store.password=foobar -Dkey.alias.password=foobar"`
 
 TODO: hi5 dist should use the debug android target instead of release by default if it doesn't detect signing parameters. It should also generate a big warning about that.
 
