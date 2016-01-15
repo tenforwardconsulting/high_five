@@ -45,9 +45,16 @@ module HighFive
         method_option :target, :aliases => '-t', :desc => "Use a specific target (i.e. <Target>.plist)"
         method_option :platform_path, :desc => "Path to ios or android directory"
         def set_icon(path)
-          icon_files = plist['CFBundleIcons']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
-          icon_files += [ plist['CFBundleIconFile'] ]
-          icon_files += plist['CFBundleIcons~ipad']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
+          begin
+            icon_files = plist['CFBundleIcons']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
+            icon_files += [ plist['CFBundleIconFile'] ]
+            icon_files += plist['CFBundleIcons~ipad']["CFBundlePrimaryIcon"]["CFBundleIconFiles"]
+          rescue
+            icon_files = []
+          end
+          if icon_files.empty?
+            icon_files = Dir.glob("#{ios_path}/**/Images.xcassets/AppIcon.appiconset/*.png")
+          end
           icon_files.each do |icon_entry|
             icon_file_name = icon_entry
             unless icon_entry.end_with? ".png"
@@ -58,6 +65,7 @@ module HighFive
             # This helps with multi-target apps
             old_icon_path = Dir[File.join(ios_path, "#{target}/**/#{icon_file_name}")].first
             old_icon_path = Dir[File.join(ios_path, "**/#{icon_file_name}")].first if old_icon_path.nil?
+            old_icon_path = Dir[File.join(icon_entry)].first if old_icon_path.nil?
 
             if old_icon_path.nil?
               puts "Skipping #{icon_entry} because the file is missing.  This will cause problems with app store submission"
@@ -68,6 +76,35 @@ module HighFive
             puts "#{old_image.width}x#{old_image.height}"
             replace_image(old_icon_path, path)
           end
+        end
+
+        desc "generate_splash_screen", "Generate and replace splash screens from logo and background color"
+        method_option :color, desc: "Background color"
+        def generate_splash_screen(path)
+          image = ChunkyPNG::Image.from_file(path)
+
+          splashes_to_make = [
+            'iphone_portrait_8_retina_hd_5_5',
+            'iphone_portrait_8_retina_hd_4_7',
+            'iphone_landscape_8_retina_hd_5_5',
+            'iphone_portrait_1x',
+            'iphone_portrait_2x',
+            'iphone_portrait_retina_4',
+            'ipad_portrait_1x',
+            'ipad_portrait_2x',
+            'ipad_landscape_1x',
+            'ipad_landscape_2x',
+            'ipad_portrait_without_status_bar_5_6_1x',
+            'ipad_portrait_without_status_bar_5_6_2x',
+            'ipad_landscape_without_status_bar_5_6_1x',
+            'ipad_landscape_without_status_bar_5_6_2x'
+          ]
+
+          splashes_to_make.each do |type|
+            generate_ios_splash_screen_image(type, ios_path, path, options[:color] || "#ffffff")
+          end
+
+          puts "Make sure you assign them in xcode if this is the first time you generated these"
         end
 
         private

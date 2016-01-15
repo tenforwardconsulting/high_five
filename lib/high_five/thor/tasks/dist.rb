@@ -56,7 +56,7 @@ module HighFive
             FileUtils.cp(@provisioning_profile, "#{ENV['HOME']}/Library/MobileDevice/Provisioning Profiles/#{uuid}.mobileprovision")
             system_or_die("rm -rf #{ios_path}/build/*")
             system_or_die(%Q(cd "#{ios_path}";
-              /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release clean build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=#{@sign_identity}" PROVISIONING_PROFILE=$uuid))
+              /usr/bin/xcodebuild -target "#{ios_target}" -configuration Release build "CONFIGURATION_BUILD_DIR=#{ios_path}/build" "CODE_SIGN_IDENTITY=iPhone Distribution" SHARED_PRECOMPS_DIR=#{ios_path}/build/sharedpch ENABLE_BITCODE=NO "ARCHS=armv7 armv7s arm64" "VALID_ARCHS=armv7 armv7s arm64" SDKROOT=iphoneos9.2))
             system_or_die(%Q(/usr/bin/xcrun -sdk iphoneos PackageApplication -v "#{ios_path}/build/#{ios_target}.app" -o "#{ios_path}/build/#{@output_file_name}.ipa" --embed "#{@provisioning_profile}"))
           end
         end

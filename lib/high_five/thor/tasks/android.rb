@@ -1,6 +1,7 @@
 require 'chunky_png'
 require 'high_five/android_helper'
 require 'nokogiri'
+require 'pry'
 
 module HighFive
   module Thor
@@ -52,9 +53,7 @@ module HighFive
           end
         end
 
-        desc "set_icon", "Generate app icons from base png image"
-        method_option :platform_path, desc: "Path to the ios or android directory"
-        method_option :environment, :aliases => '-e', :desc => "Set environment"
+        desc "set_icon", "Generate and replace app icons from base png image"
         def set_icon(path)
           image = ChunkyPNG::Image.from_file(path)
 
@@ -74,6 +73,23 @@ module HighFive
             icon_path = File.join(dir, icon_name)
             replace_image icon_path, path
             puts "Writing #{size}x#{size} -> #{icon_path}"
+          end
+        end
+
+        desc "generate_splash_screen", "Generate and replace splash screens from logo and background color"
+        method_option :color, desc: "Background color"
+        def generate_splash_screen(path)
+          image = ChunkyPNG::Image.from_file(path)
+
+          splash_name = 'screen.png'
+
+          drawable_dir = File.join File.dirname(android_manifest_path), 'res'
+          Dir.glob(File.join drawable_dir, "drawable*").each do |dir|
+            splash_path = File.join(dir, splash_name)
+            if File.exists?(splash_path)
+              generate_splash_screen_image splash_path, path, options[:color] || "#ffffff"
+              puts "Writing #{splash_path}"
+            end
           end
         end
 
