@@ -1,7 +1,6 @@
 require 'chunky_png'
 require 'high_five/android_helper'
 require 'nokogiri'
-require 'pry'
 
 module HighFive
   module Thor

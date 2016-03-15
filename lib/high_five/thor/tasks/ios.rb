@@ -90,6 +90,8 @@ module HighFive
             'iphone_portrait_1x',
             'iphone_portrait_2x',
             'iphone_portrait_retina_4',
+            'ios-7-iphone_portrait_2x',
+            'ios-7-iphone_portrait_retina_4',
             'ipad_portrait_1x',
             'ipad_portrait_2x',
             'ipad_landscape_1x',

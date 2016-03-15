@@ -52,6 +52,12 @@ module HighFive
       when 'iphone_portrait_retina_4'
         width = 640
         height = 1136
+      when 'ios-7-iphone_portrait_2x'
+        width = 640
+        height = 960
+      when 'ios-7-iphone_portrait_retina_4'
+        width = 640
+        height = 1136
       when 'ipad_portrait_1x'
         width = 768
         height = 1024
