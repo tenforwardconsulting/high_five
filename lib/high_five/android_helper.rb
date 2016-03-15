@@ -11,7 +11,7 @@ module HighFive
 
     def android_manifest_path
       if options[:platform_path]
-        platform_path = File.join(options[:platform_path], "AndroidManifest.xml")
+        platform_path = Dir[File.join(options[:platform_path], "**/AndroidManifest.xml")][0]
         return platform_path if File.exists?(platform_path)
       end
 
