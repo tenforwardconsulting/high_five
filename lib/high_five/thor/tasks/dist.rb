@@ -1,5 +1,6 @@
 require 'high_five/ios_helper'
 require 'high_five/android_helper'
+
 module HighFive
   module Thor
     module Tasks
@@ -79,8 +80,9 @@ module HighFive
 
           if @output_file_name
             if gradle
-              say "copying final build #{android_path}/build/outputs/apk/android-release.apk -> #{android_path}/build/outputs/apk/#{@output_file_name}.apk"
-              FileUtils.cp("#{android_path}/build/outputs/apk/android-release.apk", "#{android_path}/build/outputs/apk/#{@output_file_name}.apk")
+              apk = Dir["#{android_path}/build/outputs/apk/*-release.apk"][0]
+              say "copying final build #{apk} -> #{android_path}/build/outputs/apk/#{@output_file_name}.apk"
+              FileUtils.cp("#{apk}", "#{android_path}/build/outputs/apk/#{@output_file_name}.apk")
             else
               say "copying final build #{android_path}/bin/#{android_name}-release.apk -> #{android_path}/bin/#{@output_file_name}.apk"
               FileUtils.cp("#{android_path}/bin/#{android_name}-release.apk", "#{android_path}/bin/#{@output_file_name}.apk")
