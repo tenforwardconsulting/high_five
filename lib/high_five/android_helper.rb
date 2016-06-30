@@ -40,20 +40,22 @@ module HighFive
         mdpi: 48,
         hdpi: 72,
         xhdpi: 96,
+        xxhdpi: 144,
+        xxxhdpi: 192,
         drawable: 512
       }
     end
 
-    def parse_resolution(dir)
-      dir.gsub(/.*\//, '').gsub('drawable-', '').to_sym
+    def parse_resolution(dir, prefix="drawable")
+      dir.gsub(/.*\//, '').gsub("#{prefix}-", '').to_sym
     end
 
     # drawable_dir: The directory containing drawable/, drawable-hdpi, drawable-mdpi, etc
     # Returns directories which are present & whose resolutions are supported
-    def valid_directories(drawable_dir)
+    def valid_directories(drawable_dir, prefix="drawable")
       valid_dirs = []
-      Dir.glob(File.join drawable_dir, "drawable*") do |dir|
-        res = parse_resolution(dir)
+      Dir.glob(File.join drawable_dir, "#{prefix}*") do |dir|
+        res = parse_resolution(dir, prefix)
         size = res_map[res]
         valid_dirs << dir unless size.nil?
       end

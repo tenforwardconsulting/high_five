@@ -60,10 +60,15 @@ module HighFive
 
           manifest = File.read(android_manifest_path)
           puts "Using android manifest: #{android_manifest_path}"
-          icon_name = manifest.match(/android:icon="@drawable\/(.*?)"/)[1] + '.png'
+          if match = manifest.match(/android:icon="@drawable\/(.*?)"/)
+            prefix = "drawable"
+          elsif match = manifest.match(/android:icon="@mipmap\/(.*?)"/)
+            prefix = "mipmap"
+          end
+          icon_name = match[1] + '.png'
 
           drawable_dir = File.join File.dirname(android_manifest_path), 'res'
-          valid_directories(drawable_dir).each do |dir|
+          valid_directories(drawable_dir, prefix).each do |dir|
             res = parse_resolution(dir)
             size = res_map[res]
             icon_path = File.join(dir, icon_name)
