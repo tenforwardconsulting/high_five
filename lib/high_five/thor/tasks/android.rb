@@ -1,6 +1,7 @@
 require 'chunky_png'
 require 'high_five/android_helper'
 require 'nokogiri'
+require 'pry'
 
 module HighFive
   module Thor
@@ -33,6 +34,9 @@ module HighFive
           xml = Nokogiri::XML(file)
 
           # replace \n and any additional whitespace with a space
+          puts "========================================="
+          puts "#{android_manifest_path}"
+          puts "========================================="
           xml.xpath("//manifest").each do |node|
             if (options[:version])
               old = node["android:versionName"]
@@ -43,6 +47,25 @@ module HighFive
               old = node["android:versionCode"]
               node["android:versionCode"] = options[:build_number]
               puts "Setting versionCode #{old} => #{options[:build_number]}"
+            end
+          end
+
+          if gradle_file_path
+            puts "========================================="
+            puts "#{gradle_file_path}"
+            puts "========================================="
+            gradle_file = File.read(gradle_file_path)
+
+            old = gradle_file.match(/versionName\s"(.+)"$/)[1]
+            gradle_file.gsub!(/versionName\s"(.+)"$/, "versionName \"#{options[:version]}\"")
+            puts "Setting version #{old} => #{options[:version]}"
+
+            old = gradle_file.match(/versionCode\s(\d+)$/)[1]
+            gradle_file.gsub!(/versionCode\s\d+$/, "versionCode #{options[:build_number]}")
+            puts "Setting versionCode #{old} => #{options[:build_number]}"
+
+            File.open(gradle_file_path, "w") do |f|
+              f.write gradle_file
             end
           end
 

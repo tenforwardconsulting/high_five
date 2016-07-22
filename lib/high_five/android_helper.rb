@@ -34,6 +34,14 @@ module HighFive
       end
     end
 
+    def gradle_file_path
+      if options[:platform_path]
+        gradle_path = Dir[File.join(options[:platform_path], "/app/build.gradle")][0]
+        return gradle_path if gradle_path && File.exists?(gradle_path)
+      end
+      return nil
+    end
+
     def res_map
       {
         ldpi: 36,
