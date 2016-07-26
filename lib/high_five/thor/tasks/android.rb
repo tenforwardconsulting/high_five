@@ -75,6 +75,7 @@ module HighFive
         end
 
         desc "set_icon", "Generate and replace app icons from base png image"
+        method_option :platform_path, desc: "Path to the ios or android directory"
         def set_icon(path)
           image = ChunkyPNG::Image.from_file(path)
 
@@ -99,6 +100,7 @@ module HighFive
 
         desc "generate_splash_screen", "Generate and replace splash screens from logo and background color"
         method_option :color, desc: "Background color"
+        method_option :platform_path, desc: "Path to the ios or android directory"
         def generate_splash_screen(path)
           image = ChunkyPNG::Image.from_file(path)
 
