@@ -21,6 +21,7 @@ module HighFive
         method_option :"ant-flags", :desc => "Additional flags to pass directly to ant (android only)"
         method_option :platform_path, :desc => "Path to ios or android directory"
         method_option :ant, type: :boolean, :desc => "Force using ant to build"
+        method_option :debug, type: :boolean, :desc => "Create debug version of app (android only)"
         def dist(platform)
           @environment            = options[:environment]
           @output_file_name       = options[:output_file_name]
@@ -70,29 +71,69 @@ module HighFive
           system_or_die("android update project --path #{android_path} --subprojects")
           gradle_file = File.join(android_path, "build.gradle")
           gradle = File.exists?(gradle_file) && !options[:ant]
+          debug = options[:debug]
           if gradle
-            system_or_die("gradle -b #{gradle_file} clean assembleRelease")
+            if debug
+              system_or_die("gradle -b #{gradle_file} clean assembleDebug")
+            else
+              system_or_die("gradle -b #{gradle_file} clean assembleRelease")
+            end
           else
-            system_or_die("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
+            if debug
+              system_or_die("ant -file '#{android_path}/build.xml' clean debug")
+            else
+              system_or_die("ant -file '#{android_path}/build.xml' clean release #{ant_flags}")
+            end
           end
 
           android_name = HighFive::AndroidHelper.project_name_from_build_xml("#{android_path}/build.xml")
 
           if @output_file_name
             if gradle
-              apk = Dir["#{android_path}/build/outputs/apk/*-release.apk"][0]
-              say "copying final build #{apk} -> #{android_path}/build/outputs/apk/#{@output_file_name}.apk"
-              FileUtils.cp("#{apk}", "#{android_path}/build/outputs/apk/#{@output_file_name}.apk")
+              if debug
+                apk = Dir["#{android_path}/build/outputs/apk/*-release.apk"][0]
+              else
+                apk = Dir["#{android_path}/build/outputs/apk/*-debug.apk"][0]
+              end
+              @final_apk_path = "#{android_path}/build/outputs/apk/#{@output_file_name}.apk"
+              say "copying final build #{apk} -> #{@final_apk_path}"
+              FileUtils.cp("#{apk}", @final_apk_path)
             else
-              say "copying final build #{android_path}/bin/#{android_name}-release.apk -> #{android_path}/bin/#{@output_file_name}.apk"
-              FileUtils.cp("#{android_path}/bin/#{android_name}-release.apk", "#{android_path}/bin/#{@output_file_name}.apk")
+              if debug
+                apk = Dir["#{android_path}/bin/#{android_name}-debug.apk"][0]
+              else
+                apk = Dir["#{android_path}/bin/#{android_name}-release.apk"][0]
+              end
+              @final_apk_path = "#{android_path}/bin/#{@output_file_name}.apk"
+              say "copying final build #{apk} -> #{@final_apk_path}"
+              FileUtils.cp("#{apk}", @final_apk_path)
             end
           end
         end
 
         desc "install_android [ANDROID_PATH]", "Install the distribution package on the connected android device or emulator"
         def install_android(android_path)
-          system_or_die("ant -file '#{android_path}/build.xml' installr")
+          @output_file_name = options[:output_file_name]
+          gradle_file = File.join(android_path, "build.gradle")
+          gradle = File.exists?(gradle_file) && !options[:ant]
+          debug = options[:debug]
+          if debug
+            if @output_file_name
+              if gradle
+                system_or_die("adb install -r #{android_path}/build/outputs/apk/#{@output_file_name}.apk")
+              else
+                system_or_die("adb install -r #{android_path}/bin/#{@output_file_name}.apk")
+              end
+            else
+              if gradle
+                system_or_die("adb install -r #{Dir["#{android_path}/build/outputs/apk/*-debug.apk"][0]}")
+              else
+                system_or_die("adb install -r #{Dir["#{android_path}/bin/#{android_name}-debug.apk"][0]}")
+              end
+            end
+          else
+            system_or_die("ant -file '#{android_path}/build.xml' installr")
+          end
         end
 
         private
