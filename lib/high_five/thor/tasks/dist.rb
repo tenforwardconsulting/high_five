@@ -91,9 +91,9 @@ module HighFive
           if @output_file_name
             if gradle
               if debug
-                apk = Dir["#{android_path}/build/outputs/apk/*-release.apk"][0]
-              else
                 apk = Dir["#{android_path}/build/outputs/apk/*-debug.apk"][0]
+              else
+                apk = Dir["#{android_path}/build/outputs/apk/*-release.apk"][0]
               end
               @final_apk_path = "#{android_path}/build/outputs/apk/#{@output_file_name}.apk"
               say "copying final build #{apk} -> #{@final_apk_path}"
