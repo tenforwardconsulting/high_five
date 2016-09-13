@@ -53,7 +53,7 @@ module HighFive
             icon_files = []
           end
           if icon_files.empty?
-            icon_files = Dir.glob("#{ios_path}/**/Images.xcassets/AppIcon.appiconset/*.png")
+            icon_files = Dir.glob("#{ios_path}/**/AppIcon.appiconset/*.png")
           end
           icon_files.each do |icon_entry|
             icon_file_name = icon_entry
