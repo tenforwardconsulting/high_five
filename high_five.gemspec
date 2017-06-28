@@ -16,8 +16,7 @@ Gem::Specification.new do |s|
   }
 
   s.add_dependency 'multi_json', '~> 1.0'
-  s.add_runtime_dependency "thor", "~>0.18.0"
-  s.add_runtime_dependency "compass", "~>0.12.2"
+  s.add_runtime_dependency "thor", ">= 0.18.0"
   s.add_runtime_dependency "yui-compressor", "~>0.12.0"
   s.add_runtime_dependency "uglifier", "~>2.1.1"
   s.add_runtime_dependency "sprockets", "~>2.12.3"
@@ -28,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "webrick"
   s.add_development_dependency "rspec", "~>2.13.0"
   s.add_development_dependency "pry"
+  s.add_development_dependency "compass"
 
 
   s.files         = `git ls-files`.split("\n")
