@@ -101,6 +101,25 @@ module HighFive
           end
         end
 
+        desc "set_splash_screen", "Replace splash screens from base png image"
+        method_option :platform_path, desc: "Path to the ios or android directory"
+        def set_splash_screen(path)
+          image = ChunkyPNG::Image.from_file(path)
+
+          splash_name = 'screen.png'
+
+          drawable_dir = File.join File.dirname(android_manifest_path), 'res'
+          Dir.glob(File.join drawable_dir, "drawable*").each do |dir|
+            splash_path = File.join(dir, splash_name)
+            if File.exists?(splash_path)
+              res = parse_resolution(splash_path)
+              size = res_map[res]
+              replace_image splash_path, path
+              puts "Writing #{size}x#{size} -> #{splash_path}"
+            end
+          end
+        end
+
         desc "generate_splash_screen", "Generate and replace splash screens from logo and background color"
         method_option :color, desc: "Background color"
         method_option :platform_path, desc: "Path to the ios or android directory"

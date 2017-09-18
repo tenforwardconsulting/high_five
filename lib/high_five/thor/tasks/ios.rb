@@ -78,6 +78,37 @@ module HighFive
           end
         end
 
+        desc "set_splash_screen", "Replace splash screens from base png image"
+        method_option :color, desc: "Background color"
+        def set_splash_screen(path)
+          image = ChunkyPNG::Image.from_file(path)
+
+          splashes_to_make = [
+            'iphone_portrait_8_retina_hd_5_5',
+            'iphone_portrait_8_retina_hd_4_7',
+            'iphone_landscape_8_retina_hd_5_5',
+            'iphone_portrait_1x',
+            'iphone_portrait_2x',
+            'iphone_portrait_retina_4',
+            'ios-7-iphone_portrait_2x',
+            'ios-7-iphone_portrait_retina_4',
+            'ipad_portrait_1x',
+            'ipad_portrait_2x',
+            'ipad_landscape_1x',
+            'ipad_landscape_2x',
+            'ipad_portrait_without_status_bar_5_6_1x',
+            'ipad_portrait_without_status_bar_5_6_2x',
+            'ipad_landscape_without_status_bar_5_6_1x',
+            'ipad_landscape_without_status_bar_5_6_2x'
+          ]
+
+          splashes_to_make.each do |type|
+            generate_ios_splash_screen_image(type, ios_path, path, nil, true)
+          end
+
+          puts "Make sure you assign them in xcode if this is the first time you generated these"
+        end
+
         desc "generate_splash_screen", "Generate and replace splash screens from logo and background color"
         method_option :color, desc: "Background color"
         def generate_splash_screen(path)

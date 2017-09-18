@@ -31,7 +31,7 @@ module HighFive
       source.write(image_path)
     end
 
-    def generate_ios_splash_screen_image(type, ios_path, path, color)
+    def generate_ios_splash_screen_image(type, ios_path, path, color, replace=false)
       raise "Requires RMagick gem" unless rmagick?
       case type
       when 'iphone_portrait_8_retina_hd_5_5'
@@ -87,8 +87,12 @@ module HighFive
       filename = "#{type}.png"
       splash_path = Dir.glob("#{ios_path}/**/Images.xcassets/LaunchImage.launchimage").first + "/#{filename}"
       puts "Creating #{splash_path}"
-      Magick::Image.new(width, height).write(splash_path)
-      generate_splash_screen_image splash_path, path, color
+      Magick::Image.new(height, width).write(splash_path)
+      if replace
+        replace_image(splash_path, path)
+      else
+        generate_splash_screen_image splash_path, path, color
+      end
     end
 
     private

@@ -68,7 +68,7 @@ module HighFive
         def dist_android(android_path)
           @output_file_name       = options[:output_file_name]
           ant_flags = options[:"ant-flags"] || ""
-          system_or_die("android update project --path #{android_path} --subprojects")
+          # system_or_die("android update project --path #{android_path} --subprojects")
           gradle_file = File.join(android_path, "build.gradle")
           gradle = File.exists?(gradle_file) && !options[:ant]
           debug = options[:debug]
@@ -128,7 +128,7 @@ module HighFive
               if gradle
                 system_or_die("adb install -r #{Dir["#{android_path}/build/outputs/apk/*-debug.apk"][0]}")
               else
-                system_or_die("adb install -r #{Dir["#{android_path}/bin/#{android_name}-debug.apk"][0]}")
+                system_or_die("adb install -r #{Dir["#{android_path}/bin/*-debug.apk"][0]}")
               end
             end
           else
